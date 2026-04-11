@@ -21,6 +21,23 @@ type ProviderCredentials struct {
 }
 
 type ProviderConfigSpec struct {
+	// IdentityEndpoint is the OpenStack identity endpoint.
+	// Defaults to OTC public endpoint if not specified.
+	// +optional
+	IdentityEndpoint *string `json:"identityEndpoint,omitempty"`
+
+	// DomainName is the OpenStack domain name.
+	// +kubebuilder:validation:Required
+	DomainName string `json:"domainName"`
+
+	// ProjectID is the OpenStack project/tenant id.
+	// +kubebuilder:validation:Required
+	ProjectID string `json:"projectId"`
+
+	// Region is the OpenStack region (e.g., "eu-de").
+	// +kubebuilder:validation:Required
+	Region string `json:"region"`
+
 	// Credentials required to authenticate to this provider.
 	Credentials ProviderCredentials `json:"credentials"`
 }

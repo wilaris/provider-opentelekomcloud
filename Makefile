@@ -1,7 +1,7 @@
 # ====================================================================================
 # Setup Project
 PROJECT_NAME := provider-opentelekomcloud
-PROJECT_REPO := github.com/crossplane/$(PROJECT_NAME)
+PROJECT_REPO := go.wilaris.de/$(PROJECT_NAME)
 
 PLATFORMS ?= linux_amd64 linux_arm64
 -include build/makelib/common.mk
@@ -20,7 +20,7 @@ GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/provider
 GO_LDFLAGS += -X $(GO_PROJECT)/internal/version.Version=$(VERSION)
 GO_SUBDIRS += cmd internal apis
 GO111MODULE = on
-GOLANGCILINT_VERSION = 2.1.2
+GOLANGCILINT_VERSION = 2.11.4
 -include build/makelib/golang.mk
 
 # ====================================================================================
