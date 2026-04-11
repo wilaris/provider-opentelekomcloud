@@ -1,19 +1,18 @@
 ---
 name: Bug Report
-about: Help us diagnose and fix bugs in Crossplane
+about: Help us diagnose and fix bugs in Crossplane Provider Open Telekom Cloud
 labels: bug
 ---
 <!--
-Thank you for helping to improve Crossplane!
+Thank you for helping to improve Crossplane Provider Open Telekom Cloud!
 
 Please be sure to search for open issues before raising a new one. We use issues
-for bug reports and feature requests. Please find us at https://slack.crossplane.io
-for questions, support, and discussion.
+for bug reports and feature requests.
 -->
 
 ### What happened?
 <!--
-Please let us know what behaviour you expected and how Crossplane diverged from
+Please let us know what behaviour you expected and how Crossplane Provider Open Telekom Cloud diverged from
 that behaviour.
 -->
 
@@ -26,10 +25,10 @@ appreciated!
 -->
 
 ### What environment did it happen in?
-Crossplane version: 
+Crossplane Provider Open Telekom Cloud version: 
 
 <!--
-Include at least the version or commit of Crossplane you were running. Consider
+Include at least the version or commit of Crossplane Provider Open Telekom Cloud you were running. Consider
 also including your:
 
 * Cloud provider or hardware configuration
