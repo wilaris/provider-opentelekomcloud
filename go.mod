@@ -10,7 +10,6 @@ tool (
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/crossplane/crossplane-runtime/v2 v2.2.0
-	github.com/google/go-cmp v0.7.0
 	github.com/opentelekomcloud/gophertelekomcloud v0.9.6-0.20260329203346-ce1539b84cdc
 	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.80.0
@@ -56,6 +55,7 @@ require (
 	github.com/gobuffalo/flect v1.0.3 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.7.1 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

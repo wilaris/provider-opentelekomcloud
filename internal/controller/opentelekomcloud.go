@@ -5,6 +5,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/config"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/subnet"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/vpc"
 )
 
 // SetupGated creates all OpenTelekomCloud controllers with safe-start support and adds them to
@@ -12,6 +14,8 @@ import (
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
+		subnet.SetupGated,
+		vpc.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

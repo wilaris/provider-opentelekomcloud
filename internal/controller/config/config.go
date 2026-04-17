@@ -31,6 +31,7 @@ func setupNamespacedProviderConfig(mgr ctrl.Manager, o controller.Options) error
 
 	r := providerconfig.NewReconciler(mgr, of,
 		providerconfig.WithLogger(o.Logger.WithValues("controller", name)),
+		//nolint:staticcheck // controller-runtime recorder type mismatch with event.NewAPIRecorder in this codebase version.
 		providerconfig.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))))
 
 	return ctrl.NewControllerManagedBy(mgr).
@@ -51,6 +52,7 @@ func setupClusterProviderConfig(mgr ctrl.Manager, o controller.Options) error {
 
 	r := providerconfig.NewReconciler(mgr, of,
 		providerconfig.WithLogger(o.Logger.WithValues("controller", name)),
+		//nolint:staticcheck // controller-runtime recorder type mismatch with event.NewAPIRecorder in this codebase version.
 		providerconfig.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))))
 
 	return ctrl.NewControllerManagedBy(mgr).
