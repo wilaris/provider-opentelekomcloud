@@ -1,0 +1,310 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.20.1
+  name: elasticips.network.opentelekomcloud.crossplane.io
+spec:
+  group: network.opentelekomcloud.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - opentelekomcloud
+    kind: ElasticIP
+    listKind: ElasticIPList
+    plural: elasticips
+    singular: elasticip
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .status.atProvider.publicIpAddress
+      name: IP
+      type: string
+    - jsonPath: .status.atProvider.status
+      name: STATUS
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: An ElasticIP is a managed resource that represents an OpenTelekomCloud
+          VPC Elastic IP.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: An ElasticIPSpec defines the desired state of an ElasticIP.
+            properties:
+              forProvider:
+                description: ElasticIPParameters are the configurable fields of an
+                  ElasticIP.
+                properties:
+                  bandwidth:
+                    description: Bandwidth defines the bandwidth configuration.
+                    properties:
+                      chargeMode:
+                        description: ChargeMode is the bandwidth charge mode.
+                        type: string
+                      name:
+                        description: Name is the bandwidth name.
+                        maxLength: 64
+                        minLength: 1
+                        type: string
+                      shareType:
+                        description: |-
+                          ShareType is the bandwidth sharing type.
+                          Dedicated allocates bandwidth exclusively for this EIP.
+                        enum:
+                        - Dedicated
+                        type: string
+                      size:
+                        description: Size is the bandwidth size in Mbps.
+                        minimum: 1
+                        type: integer
+                    required:
+                    - name
+                    - shareType
+                    - size
+                    type: object
+                  publicIp:
+                    description: PublicIP defines the public IP configuration.
+                    properties:
+                      ipAddress:
+                        description: IPAddress is the specific IP address to request.
+                        type: string
+                      name:
+                        description: Name is the alias of the public IP.
+                        maxLength: 64
+                        type: string
+                      portId:
+                        description: PortID is the port to bind the EIP to.
+                        type: string
+                      type:
+                        description: |-
+                          Type is the public IP type.
+                          BGP corresponds to the OTC "5_bgp" dynamic BGP type.
+                        enum:
+                        - BGP
+                        type: string
+                    required:
+                    - type
+                    type: object
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: Tags are ElasticIP tags.
+                    maxProperties: 20
+                    type: object
+                required:
+                - bandwidth
+                - publicIp
+                type: object
+                x-kubernetes-validations:
+                - message: publicIp.type is immutable after creation
+                  rule: self.publicIp.type == oldSelf.publicIp.type
+                - message: publicIp.ipAddress is immutable after creation
+                  rule: oldSelf.publicIp.ipAddress == null || self.publicIp.ipAddress
+                    == oldSelf.publicIp.ipAddress
+                - message: publicIp.name is immutable after creation
+                  rule: oldSelf.publicIp.name == null || self.publicIp.name == oldSelf.publicIp.name
+                - message: bandwidth.shareType is immutable after creation
+                  rule: self.bandwidth.shareType == oldSelf.bandwidth.shareType
+                - message: bandwidth.chargeMode is immutable after creation
+                  rule: oldSelf.bandwidth.chargeMode == null || self.bandwidth.chargeMode
+                    == oldSelf.bandwidth.chargeMode
+              managementPolicies:
+                default:
+                - '*'
+                description: |-
+                  THIS IS A BETA FIELD. It is on by default but can be opted out
+                  through a Crossplane feature flag.
+                  ManagementPolicies specify the array of actions Crossplane is allowed to
+                  take on the managed and external resources.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223
+                  and this one: https://github.com/crossplane/crossplane/blob/444267e84783136daa93568b364a5f01228cacbe/design/one-pager-ignore-changes.md
+                items:
+                  description: |-
+                    A ManagementAction represents an action that the Crossplane controllers
+                    can take on an external resource.
+                  enum:
+                  - Observe
+                  - Create
+                  - Update
+                  - Delete
+                  - LateInitialize
+                  - '*'
+                  type: string
+                type: array
+              providerConfigRef:
+                default:
+                  kind: ClusterProviderConfig
+                  name: default
+                description: |-
+                  ProviderConfigReference specifies how the provider that will be used to
+                  create, observe, update, and delete this managed resource should be
+                  configured.
+                properties:
+                  kind:
+                    description: Kind of the referenced object.
+                    type: string
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - kind
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: |-
+                  WriteConnectionSecretToReference specifies the namespace and name of a
+                  Secret to which any connection details for this managed resource should
+                  be written. Connection details frequently include the endpoint, username,
+                  and password required to connect to the managed resource.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                required:
+                - name
+                type: object
+            required:
+            - forProvider
+            type: object
+          status:
+            description: An ElasticIPStatus represents the observed state of an ElasticIP.
+            properties:
+              atProvider:
+                description: ElasticIPObservation are the observable fields of an
+                  ElasticIP.
+                properties:
+                  bandwidthChargeMode:
+                    description: BandwidthChargeMode is the observed bandwidth charge
+                      mode.
+                    type: string
+                  bandwidthId:
+                    description: BandwidthID is the associated bandwidth ID.
+                    type: string
+                  bandwidthName:
+                    description: BandwidthName is the observed bandwidth name.
+                    type: string
+                  bandwidthShareType:
+                    description: BandwidthShareType is the observed bandwidth sharing
+                      type.
+                    type: string
+                  bandwidthSize:
+                    description: BandwidthSize is the observed bandwidth size in Mbps.
+                    type: integer
+                  id:
+                    description: ID is the OTC EIP ID.
+                    type: string
+                  ipVersion:
+                    description: IPVersion is the observed IP version (4 or 6).
+                    type: integer
+                  portId:
+                    description: PortID is the currently bound port ID.
+                    type: string
+                  privateIpAddress:
+                    description: PrivateIPAddress is the private IP address if bound
+                      to a port.
+                    type: string
+                  publicIpAddress:
+                    description: PublicIPAddress is the allocated public IP address.
+                    type: string
+                  status:
+                    description: Status is the observed EIP status.
+                    type: string
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: Tags are observed EIP tags.
+                    type: object
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        LastTransitionTime is the last time this condition transitioned from one
+                        status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A Message containing details about this condition's last transition from
+                        one status to another, if any.
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        ObservedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      type: integer
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: |-
+                        Type of this condition. At most one of each condition type may apply to
+                        a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              observedGeneration:
+                description: |-
+                  ObservedGeneration is the latest metadata.generation
+                  which resulted in either a ready state, or stalled due to error
+                  it can not recover from without human intervention.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

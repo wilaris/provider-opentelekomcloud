@@ -5,6 +5,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/config"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/elasticip"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/subnet"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/vpc"
 )
@@ -14,6 +15,7 @@ import (
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
+		elasticip.SetupGated,
 		subnet.SetupGated,
 		vpc.SetupGated,
 	} {
