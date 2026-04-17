@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"sync"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
@@ -23,7 +24,10 @@ const (
 	DefaultIdentityEndpoint = "https://iam.eu-de.otc.t-systems.com/v3"
 )
 
-var authenticatedClient = openstack.AuthenticatedClient
+var (
+	newClient    = openstack.NewClient
+	authenticate = openstack.Authenticate
+)
 
 // Credentials represents AK/SK credentials.
 type Credentials struct {
@@ -68,8 +72,13 @@ func (c *Cache) GetClient(
 		return nil, errors.Wrap(err, "cannot extract credentials")
 	}
 
-	// If the secret changes (new key) or spec changes.
-	configHash := calculateHash(spec, creds)
+	// Resolve endpoint early so it participates in the cache hash
+	endpoint := DefaultIdentityEndpoint
+	if spec.IdentityEndpoint != nil && *spec.IdentityEndpoint != "" {
+		endpoint = *spec.IdentityEndpoint
+	}
+
+	configHash := calculateHash(spec, creds, endpoint)
 
 	// Check the cache
 	c.mu.RLock()
@@ -83,10 +92,25 @@ func (c *Cache) GetClient(
 		}, nil
 	}
 
-	// Create a new provider client
-	endpoint := DefaultIdentityEndpoint
-	if spec.IdentityEndpoint != nil && *spec.IdentityEndpoint != "" {
-		endpoint = *spec.IdentityEndpoint
+	// Create a (unauthenticated) provider client
+	providerClient, err := newClient(endpoint)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot create provider client")
+	}
+
+	// Configure redirect re-signing for AK/SK auth.
+	providerClient.HTTPClient = http.Client{
+		Transport: providerClient.HTTPClient.Transport,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			if len(via) >= 10 {
+				return fmt.Errorf("stopped after 10 redirects")
+			}
+			golangsdk.ReSign(req, golangsdk.SignOptions{
+				AccessKey: creds.AccessKey,
+				SecretKey: creds.SecretKey,
+			})
+			return nil
+		},
 	}
 
 	authOpts := golangsdk.AKSKAuthOptions{
@@ -97,8 +121,7 @@ func (c *Cache) GetClient(
 		Region:           spec.Region,
 	}
 
-	providerClient, err := authenticatedClient(authOpts)
-	if err != nil {
+	if err := authenticate(providerClient, authOpts); err != nil {
 		return nil, errors.Wrap(err, "cannot authenticate with Open Telekom Cloud")
 	}
 
@@ -158,8 +181,9 @@ func extractCredentials(
 	return creds, nil
 }
 
-func calculateHash(spec v1alpha1.ProviderConfigSpec, creds *Credentials) string {
-	s := fmt.Sprintf("%s|%s|%s|%s|%s",
+func calculateHash(spec v1alpha1.ProviderConfigSpec, creds *Credentials, endpoint string) string {
+	s := fmt.Sprintf("%s|%s|%s|%s|%s|%s",
+		endpoint,
 		spec.DomainName,
 		spec.ProjectID,
 		spec.Region,
