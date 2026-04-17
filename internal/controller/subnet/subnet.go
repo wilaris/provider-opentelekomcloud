@@ -110,7 +110,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	r := managed.NewReconciler(
 		mgr,
 		resource.ManagedKind(networkv1alpha1.SubnetGroupVersionKind),
-		opts...)
+		opts...,
+	)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
@@ -259,11 +260,12 @@ func (e *external) Create(
 	}
 	meta.SetExternalName(cr, created.ID)
 
-	if err := e.reconcileTags(
+	err = e.reconcileTags(
 		created.ID,
 		map[string]string{},
 		cr.Spec.ForProvider.Tags,
-	); err != nil {
+	)
+	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateSubnet)
 	}
 
@@ -320,7 +322,8 @@ func (e *external) Delete(
 		return managed.ExternalDelete{}, nil
 	}
 
-	if err := subnets.Delete(e.networkV1Client, vpcID, externalName).ExtractErr(); err != nil {
+	err = subnets.Delete(e.networkV1Client, vpcID, externalName).ExtractErr()
+	if err != nil {
 		if util.IsNotFound(err) {
 			return managed.ExternalDelete{}, nil
 		}
@@ -520,16 +523,18 @@ func (e *external) reconcileTags(
 
 	toCreate := util.TagDiff(desired, current)
 	if len(toCreate) > 0 {
-		if err := tags.Create(e.networkV2Client, "subnets", id, util.MapToResourceTags(toCreate)).
-			ExtractErr(); err != nil {
+		err := tags.Create(e.networkV2Client, "subnets", id, util.MapToResourceTags(toCreate)).
+			ExtractErr()
+		if err != nil {
 			return err
 		}
 	}
 
 	toDelete := util.TagDiff(current, desired)
 	if len(toDelete) > 0 {
-		if err := tags.Delete(e.networkV2Client, "subnets", id, util.MapToResourceTags(toDelete)).
-			ExtractErr(); err != nil {
+		err := tags.Delete(e.networkV2Client, "subnets", id, util.MapToResourceTags(toDelete)).
+			ExtractErr()
+		if err != nil {
 			return err
 		}
 	}

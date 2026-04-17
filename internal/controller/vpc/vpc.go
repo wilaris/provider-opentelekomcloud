@@ -110,7 +110,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	r := managed.NewReconciler(
 		mgr,
 		resource.ManagedKind(networkv1alpha1.VPCGroupVersionKind),
-		opts...)
+		opts...,
+	)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
@@ -253,18 +254,20 @@ func (e *external) Create(
 	}
 	meta.SetExternalName(cr, created.ID)
 
-	if err := e.reconcileTags(
+	err = e.reconcileTags(
 		created.ID,
 		map[string]string{},
 		cr.Spec.ForProvider.Tags,
-	); err != nil {
+	)
+	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateVPC)
 	}
-	if err := e.reconcileSecondaryCIDR(
+	err = e.reconcileSecondaryCIDR(
 		created.ID,
 		"",
 		cr.Spec.ForProvider.SecondaryCIDR,
-	); err != nil {
+	)
+	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateVPC)
 	}
 
