@@ -87,8 +87,7 @@ spec:
                     - "4"
                     type: string
                   subnetId:
-                    description: SubnetID is the ID of the subnet (internal network)
-                      for the NAT gateway.
+                    description: SubnetID is the ID of the subnet for the NAT gateway.
                     type: string
                   subnetIdRef:
                     description: SubnetIDRef is a namespaced reference to a Subnet
@@ -179,8 +178,8 @@ spec:
                     maxProperties: 20
                     type: object
                   vpcId:
-                    description: VPCID is the ID of the VPC (router) this NAT gateway
-                      belongs to.
+                    description: VPCID is the ID of the VPC this NAT gateway belongs
+                      to.
                     type: string
                   vpcIdRef:
                     description: VPCIDRef is a namespaced reference to a VPC to populate

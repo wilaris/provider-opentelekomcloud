@@ -31,7 +31,7 @@ type NATGatewayParameters struct {
 	// +kubebuilder:validation:Enum="1";"2";"3";"4"
 	Size string `json:"size"`
 
-	// VPCID is the ID of the VPC (router) this NAT gateway belongs to.
+	// VPCID is the ID of the VPC this NAT gateway belongs to.
 	// +crossplane:generate:reference:type=go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1.VPC
 	// +crossplane:generate:reference:extractor=github.com/crossplane/crossplane-runtime/v2/pkg/reference.ExternalName()
 	// +optional
@@ -45,7 +45,7 @@ type NATGatewayParameters struct {
 	// +optional
 	VPCIDSelector *xpv1.NamespacedSelector `json:"vpcIdSelector,omitempty"`
 
-	// SubnetID is the ID of the subnet (internal network) for the NAT gateway.
+	// SubnetID is the ID of the subnet for the NAT gateway.
 	// +crossplane:generate:reference:type=go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1.Subnet
 	// +crossplane:generate:reference:extractor=github.com/crossplane/crossplane-runtime/v2/pkg/reference.ExternalName()
 	// +optional
