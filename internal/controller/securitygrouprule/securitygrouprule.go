@@ -58,7 +58,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 				mgr.GetClient(),
 				&apisv1alpha1.ProviderConfigUsage{},
 			),
-			clientCache: clients.NewCache(mgr.GetClient()),
+			clientCache: clients.SharedCache(mgr.GetClient()),
 		}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),

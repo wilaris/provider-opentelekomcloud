@@ -25,6 +25,9 @@ const (
 )
 
 var (
+	sharedCache     *Cache
+	sharedCacheOnce sync.Once
+
 	newClient    = openstack.NewClient
 	authenticate = openstack.Authenticate
 )
@@ -58,6 +61,14 @@ func NewCache(kube client.Client) *Cache {
 		sessions: make(map[string]*session),
 		client:   kube,
 	}
+}
+
+// SharedCache returns a process-wide shared Cache instance.
+func SharedCache(kube client.Client) *Cache {
+	sharedCacheOnce.Do(func() {
+		sharedCache = NewCache(kube)
+	})
+	return sharedCache
 }
 
 // GetClient returns a cached client or creates a new one.
