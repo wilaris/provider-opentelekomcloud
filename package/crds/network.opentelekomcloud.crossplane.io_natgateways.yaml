@@ -4,7 +4,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.20.1
-  name: securitygrouprules.network.opentelekomcloud.crossplane.io
+  name: natgateways.network.opentelekomcloud.crossplane.io
 spec:
   group: network.opentelekomcloud.crossplane.io
   names:
@@ -12,10 +12,10 @@ spec:
     - crossplane
     - managed
     - opentelekomcloud
-    kind: SecurityGroupRule
-    listKind: SecurityGroupRuleList
-    plural: securitygrouprules
-    singular: securitygrouprule
+    kind: NATGateway
+    listKind: NATGatewayList
+    plural: natgateways
+    singular: natgateway
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -28,8 +28,11 @@ spec:
     - jsonPath: .metadata.annotations.crossplane\.io/external-name
       name: EXTERNAL-NAME
       type: string
-    - jsonPath: .spec.forProvider.direction
-      name: DIRECTION
+    - jsonPath: .spec.forProvider.size
+      name: SIZE
+      type: string
+    - jsonPath: .status.atProvider.status
+      name: STATUS
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: AGE
@@ -37,8 +40,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A SecurityGroupRule is a managed resource that represents an
-          OpenTelekomCloud VPC Security Group Rule.
+        description: A NATGateway is a managed resource that represents an OpenTelekomCloud
+          NAT Gateway.
         properties:
           apiVersion:
             description: |-
@@ -58,62 +61,38 @@ spec:
           metadata:
             type: object
           spec:
-            description: A SecurityGroupRuleSpec defines the desired state of a SecurityGroupRule.
+            description: A NATGatewaySpec defines the desired state of a NATGateway.
             properties:
               forProvider:
-                description: |-
-                  SecurityGroupRuleParameters are the configurable fields of a SecurityGroupRule.
-                  All fields are immutable after creation — the OTC API does not support updates.
+                description: NATGatewayParameters are the configurable fields of a
+                  NATGateway.
                 properties:
-                  action:
-                    description: Action is the security group rule action.
-                    enum:
-                    - allow
-                    - deny
-                    type: string
                   description:
-                    description: Description provides supplementary information about
-                      the security group rule.
+                    description: Description is the NAT gateway description.
                     maxLength: 255
                     type: string
-                  direction:
-                    description: Direction is the traffic direction of the security
-                      group rule.
+                  name:
+                    description: Name is the NAT gateway name.
+                    maxLength: 64
+                    minLength: 1
+                    type: string
+                  size:
+                    description: |-
+                      Size is the NAT gateway specification (tier).
+                      "1" = small, "2" = medium, "3" = large, "4" = extra-large.
                     enum:
-                    - ingress
-                    - egress
+                    - "1"
+                    - "2"
+                    - "3"
+                    - "4"
                     type: string
-                  etherType:
-                    description: EtherType is the IP version. Defaults to IPv4 when
-                      omitted.
-                    enum:
-                    - IPv4
-                    - IPv6
+                  subnetId:
+                    description: SubnetID is the ID of the subnet (internal network)
+                      for the NAT gateway.
                     type: string
-                  multiPort:
-                    description: |-
-                      MultiPort is the port or port range.
-                      Can be a single port (80), a port range (1-30), or comma-separated ports (22,3389,80).
-                    type: string
-                  priority:
-                    description: Priority is the rule priority. The value is from
-                      1 to 100, where 1 is the highest priority.
-                    maximum: 100
-                    minimum: 1
-                    type: integer
-                  protocol:
-                    description: |-
-                      Protocol is the protocol type.
-                      The value can be icmp, tcp, udp, icmpv6, or an IP protocol number.
-                    type: string
-                  remoteGroupId:
-                    description: |-
-                      RemoteGroupID is the ID of the remote security group.
-                      Mutually exclusive with remoteIpPrefix.
-                    type: string
-                  remoteGroupIdRef:
-                    description: RemoteGroupIDRef is a namespaced reference to a SecurityGroup
-                      for remoteGroupId.
+                  subnetIdRef:
+                    description: SubnetIDRef is a namespaced reference to a Subnet
+                      to populate subnetId.
                     properties:
                       name:
                         description: Name of the referenced object.
@@ -149,9 +128,9 @@ spec:
                     required:
                     - name
                     type: object
-                  remoteGroupIdSelector:
-                    description: RemoteGroupIDSelector selects a namespaced reference
-                      to a SecurityGroup for remoteGroupId.
+                  subnetIdSelector:
+                    description: SubnetIDSelector selects a namespaced reference to
+                      a Subnet to populate subnetId.
                     properties:
                       matchControllerRef:
                         description: |-
@@ -193,18 +172,19 @@ spec:
                             type: string
                         type: object
                     type: object
-                  remoteIpPrefix:
-                    description: |-
-                      RemoteIPPrefix is the remote IP address or CIDR block.
-                      Mutually exclusive with remoteGroupId.
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: Tags are NAT gateway tags.
+                    maxProperties: 20
+                    type: object
+                  vpcId:
+                    description: VPCID is the ID of the VPC (router) this NAT gateway
+                      belongs to.
                     type: string
-                  securityGroupId:
-                    description: SecurityGroupID is the ID of the security group to
-                      which this rule belongs.
-                    type: string
-                  securityGroupIdRef:
-                    description: SecurityGroupIDRef is a namespaced reference to a
-                      SecurityGroup.
+                  vpcIdRef:
+                    description: VPCIDRef is a namespaced reference to a VPC to populate
+                      vpcId.
                     properties:
                       name:
                         description: Name of the referenced object.
@@ -240,9 +220,9 @@ spec:
                     required:
                     - name
                     type: object
-                  securityGroupIdSelector:
-                    description: SecurityGroupIDSelector selects a namespaced reference
-                      to a SecurityGroup.
+                  vpcIdSelector:
+                    description: VPCIDSelector selects a namespaced reference to a
+                      VPC to populate vpcId.
                     properties:
                       matchControllerRef:
                         description: |-
@@ -285,34 +265,18 @@ spec:
                         type: object
                     type: object
                 required:
-                - direction
+                - name
+                - size
                 type: object
                 x-kubernetes-validations:
-                - message: one of securityGroupId, securityGroupIdRef or securityGroupIdSelector
-                    is required
-                  rule: has(self.securityGroupId) || has(self.securityGroupIdRef)
-                    || has(self.securityGroupIdSelector)
-                - message: direction is immutable after creation
-                  rule: self.direction == oldSelf.direction
-                - message: securityGroupId is immutable after creation
-                  rule: oldSelf.securityGroupId == null || self.securityGroupId ==
-                    oldSelf.securityGroupId
-                - message: description is immutable after creation
-                  rule: oldSelf.description == null || self.description == oldSelf.description
-                - message: etherType is immutable after creation
-                  rule: oldSelf.etherType == null || self.etherType == oldSelf.etherType
-                - message: protocol is immutable after creation
-                  rule: oldSelf.protocol == null || self.protocol == oldSelf.protocol
-                - message: multiPort is immutable after creation
-                  rule: oldSelf.multiPort == null || self.multiPort == oldSelf.multiPort
-                - message: remoteGroupId is immutable after creation
-                  rule: oldSelf.remoteGroupId == null || self.remoteGroupId == oldSelf.remoteGroupId
-                - message: remoteIpPrefix is immutable after creation
-                  rule: oldSelf.remoteIpPrefix == null || self.remoteIpPrefix == oldSelf.remoteIpPrefix
-                - message: action is immutable after creation
-                  rule: oldSelf.action == null || self.action == oldSelf.action
-                - message: priority is immutable after creation
-                  rule: oldSelf.priority == null || self.priority == oldSelf.priority
+                - message: one of vpcId, vpcIdRef or vpcIdSelector is required
+                  rule: has(self.vpcId) || has(self.vpcIdRef) || has(self.vpcIdSelector)
+                - message: vpcId is immutable after creation
+                  rule: oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId
+                - message: one of subnetId, subnetIdRef or subnetIdSelector is required
+                  rule: has(self.subnetId) || has(self.subnetIdRef) || has(self.subnetIdSelector)
+                - message: subnetId is immutable after creation
+                  rule: oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId
               managementPolicies:
                 default:
                 - '*'
@@ -372,54 +336,41 @@ spec:
             - forProvider
             type: object
           status:
-            description: A SecurityGroupRuleStatus represents the observed state of
-              a SecurityGroupRule.
+            description: A NATGatewayStatus represents the observed state of a NATGateway.
             properties:
               atProvider:
-                description: SecurityGroupRuleObservation are the observable fields
-                  of a SecurityGroupRule.
+                description: NATGatewayObservation are the observable fields of a
+                  NATGateway.
                 properties:
-                  action:
-                    description: Action is the observed rule action.
-                    type: string
+                  adminStateUp:
+                    description: AdminStateUp is the observed administrative state.
+                    type: boolean
                   description:
-                    description: Description is the observed description.
-                    type: string
-                  direction:
-                    description: Direction is the observed traffic direction.
-                    type: string
-                  etherType:
-                    description: EtherType is the observed IP version.
+                    description: Description is the observed NAT gateway description.
                     type: string
                   id:
-                    description: ID is the OTC security group rule ID.
+                    description: ID is the OTC NAT gateway ID.
                     type: string
-                  multiPort:
-                    description: MultiPort is the observed port or port range.
+                  name:
+                    description: Name is the observed NAT gateway name.
                     type: string
-                  priority:
-                    description: Priority is the observed rule priority.
-                    type: integer
-                  projectId:
-                    description: ProjectID is the project to which the rule belongs.
+                  size:
+                    description: Size is the observed NAT gateway specification (tier).
                     type: string
-                  protocol:
-                    description: Protocol is the observed protocol type.
+                  status:
+                    description: Status is the observed NAT gateway lifecycle status.
                     type: string
-                  remoteAddressGroupId:
-                    description: RemoteAddressGroupID is the observed remote address
-                      group ID.
-                    type: string
-                  remoteGroupId:
-                    description: RemoteGroupID is the observed remote security group
+                  subnetId:
+                    description: SubnetID is the observed subnet (internal network)
                       ID.
                     type: string
-                  remoteIpPrefix:
-                    description: RemoteIPPrefix is the observed remote IP address
-                      or CIDR block.
-                    type: string
-                  securityGroupId:
-                    description: SecurityGroupID is the observed security group ID.
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: Tags are observed NAT gateway tags.
+                    type: object
+                  vpcId:
+                    description: VPCID is the observed VPC (router) ID.
                     type: string
                 type: object
               conditions:

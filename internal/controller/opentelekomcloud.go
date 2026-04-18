@@ -6,6 +6,7 @@ import (
 
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/config"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/elasticip"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/natgateway"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygroup"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygrouprule"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/subnet"
@@ -18,6 +19,7 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
 		elasticip.SetupGated,
+		natgateway.SetupGated,
 		securitygroup.SetupGated,
 		securitygrouprule.SetupGated,
 		subnet.SetupGated,
