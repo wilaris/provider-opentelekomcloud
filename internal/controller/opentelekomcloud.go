@@ -9,6 +9,7 @@ import (
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/natgateway"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygroup"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygrouprule"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/snatrule"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/subnet"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/vpc"
 )
@@ -22,6 +23,7 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		natgateway.SetupGated,
 		securitygroup.SetupGated,
 		securitygrouprule.SetupGated,
+		snatrule.SetupGated,
 		subnet.SetupGated,
 		vpc.SetupGated,
 	} {
