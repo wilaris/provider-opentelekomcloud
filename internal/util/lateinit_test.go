@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-)
 
-func ptr[T any](v T) *T { return &v }
+	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
+)
 
 func TestLateInitPtr(t *testing.T) {
 	tests := []struct {
@@ -16,10 +16,10 @@ func TestLateInitPtr(t *testing.T) {
 		want        *bool
 		wantChanged bool
 	}{
-		{"nil current, true observed", nil, true, ptr(true), true},
-		{"nil current, false observed (zero)", nil, false, ptr(false), true},
-		{"non-nil current, different observed", ptr(true), false, ptr(true), false},
-		{"non-nil current, same observed", ptr(false), false, ptr(false), false},
+		{"nil current, true observed", nil, true, pointer.To(true), true},
+		{"nil current, false observed (zero)", nil, false, pointer.To(false), true},
+		{"non-nil current, different observed", pointer.To(true), false, pointer.To(true), false},
+		{"non-nil current, same observed", pointer.To(false), false, pointer.To(false), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -47,10 +47,10 @@ func TestLateInitPtrIfNonZero(t *testing.T) {
 		want        *string
 		wantChanged bool
 	}{
-		{"nil current, non-zero observed", nil, "hello", ptr("hello"), true},
+		{"nil current, non-zero observed", nil, "hello", pointer.To("hello"), true},
 		{"nil current, zero observed", nil, "", nil, false},
-		{"non-nil current, different observed", ptr("a"), "b", ptr("a"), false},
-		{"non-nil current, same observed", ptr("a"), "a", ptr("a"), false},
+		{"non-nil current, different observed", pointer.To("a"), "b", pointer.To("a"), false},
+		{"non-nil current, same observed", pointer.To("a"), "a", pointer.To("a"), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
