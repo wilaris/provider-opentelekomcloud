@@ -39,3 +39,47 @@ func (mg *PrivateZone) ResolveReferences(ctx context.Context, c client.Reader) e
 
 	return nil
 }
+
+// ResolveReferences of this RecordSet.
+func (mg *RecordSet) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.PrivateZoneID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.PrivateZoneIDRef,
+		Selector:     mg.Spec.ForProvider.PrivateZoneIDSelector,
+		To: reference.To{
+			List:    &PrivateZoneList{},
+			Managed: &PrivateZone{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.PrivateZoneID")
+	}
+	mg.Spec.ForProvider.PrivateZoneID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.PrivateZoneIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.PublicZoneID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.PublicZoneIDRef,
+		Selector:     mg.Spec.ForProvider.PublicZoneIDSelector,
+		To: reference.To{
+			List:    &PublicZoneList{},
+			Managed: &PublicZone{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.PublicZoneID")
+	}
+	mg.Spec.ForProvider.PublicZoneID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.PublicZoneIDRef = rsp.ResolvedReference
+
+	return nil
+}
