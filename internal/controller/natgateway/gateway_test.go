@@ -8,19 +8,19 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
-	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
+	natv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
 
-func TestValidateNATGatewayParameters(t *testing.T) {
+func TestValidateGatewayParameters(t *testing.T) {
 	tests := []struct {
 		name    string
-		params  networkv1alpha1.NATGatewayParameters
+		params  natv1alpha1.GatewayParameters
 		wantErr bool
 	}{
 		{
 			name: "valid minimal",
-			params: networkv1alpha1.NATGatewayParameters{
+			params: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -30,7 +30,7 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 		},
 		{
 			name: "valid with all fields",
-			params: networkv1alpha1.NATGatewayParameters{
+			params: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("test description"),
 				Size:        "4",
@@ -42,7 +42,7 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 		},
 		{
 			name: "missing name",
-			params: networkv1alpha1.NATGatewayParameters{
+			params: natv1alpha1.GatewayParameters{
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
 				SubnetID: pointer.To("subnet-456"),
@@ -51,7 +51,7 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 		},
 		{
 			name: "missing size",
-			params: networkv1alpha1.NATGatewayParameters{
+			params: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				VPCID:    pointer.To("vpc-123"),
 				SubnetID: pointer.To("subnet-456"),
@@ -60,7 +60,7 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 		},
 		{
 			name: "missing vpcId",
-			params: networkv1alpha1.NATGatewayParameters{
+			params: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				SubnetID: pointer.To("subnet-456"),
@@ -69,7 +69,7 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 		},
 		{
 			name: "missing subnetId",
-			params: networkv1alpha1.NATGatewayParameters{
+			params: natv1alpha1.GatewayParameters{
 				Name:  "my-nat",
 				Size:  "1",
 				VPCID: pointer.To("vpc-123"),
@@ -79,10 +79,10 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateNATGatewayParameters(tt.params)
+			err := validateGatewayParameters(tt.params)
 			if (err != nil) != tt.wantErr {
 				t.Errorf(
-					"validateNATGatewayParameters() error = %v, wantErr %v",
+					"validateGatewayParameters() error = %v, wantErr %v",
 					err,
 					tt.wantErr,
 				)
@@ -91,17 +91,17 @@ func TestValidateNATGatewayParameters(t *testing.T) {
 	}
 }
 
-func TestIsNATGatewayUpToDate(t *testing.T) {
+func TestIsGatewayUpToDate(t *testing.T) {
 	tests := []struct {
 		name         string
-		spec         networkv1alpha1.NATGatewayParameters
+		spec         natv1alpha1.GatewayParameters
 		observed     natgateways.NatGateway
 		observedTags map[string]string
 		want         bool
 	}{
 		{
 			name: "fully up to date",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("desc"),
 				Size:        "2",
@@ -121,7 +121,7 @@ func TestIsNATGatewayUpToDate(t *testing.T) {
 		},
 		{
 			name: "nil optional fields are up to date",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -139,7 +139,7 @@ func TestIsNATGatewayUpToDate(t *testing.T) {
 		},
 		{
 			name: "name mismatch",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "new-name",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -155,7 +155,7 @@ func TestIsNATGatewayUpToDate(t *testing.T) {
 		},
 		{
 			name: "size mismatch",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "3",
 				VPCID:    pointer.To("vpc-123"),
@@ -171,7 +171,7 @@ func TestIsNATGatewayUpToDate(t *testing.T) {
 		},
 		{
 			name: "description mismatch",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("new desc"),
 				Size:        "1",
@@ -189,7 +189,7 @@ func TestIsNATGatewayUpToDate(t *testing.T) {
 		},
 		{
 			name: "tags mismatch",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -208,23 +208,23 @@ func TestIsNATGatewayUpToDate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := isNATGatewayUpToDate(tt.spec, tt.observed, tt.observedTags)
+			got := isGatewayUpToDate(tt.spec, tt.observed, tt.observedTags)
 			if got != tt.want {
-				t.Errorf("isNATGatewayUpToDate() = %v, want %v", got, tt.want)
+				t.Errorf("isGatewayUpToDate() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBuildNATGatewayCreateOpts(t *testing.T) {
+func TestBuildGatewayCreateOpts(t *testing.T) {
 	tests := []struct {
 		name string
-		spec networkv1alpha1.NATGatewayParameters
+		spec natv1alpha1.GatewayParameters
 		want natgateways.CreateOpts
 	}{
 		{
 			name: "minimal",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -239,7 +239,7 @@ func TestBuildNATGatewayCreateOpts(t *testing.T) {
 		},
 		{
 			name: "with all fields",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("test desc"),
 				Size:        "4",
@@ -258,7 +258,7 @@ func TestBuildNATGatewayCreateOpts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := buildNATGatewayCreateOpts(tt.spec)
+			got := buildGatewayCreateOpts(tt.spec)
 			if got.Name != tt.want.Name {
 				t.Errorf("Name = %v, want %v", got.Name, tt.want.Name)
 			}
@@ -282,10 +282,10 @@ func TestBuildNATGatewayCreateOpts(t *testing.T) {
 	}
 }
 
-func TestBuildNATGatewayUpdateOpts(t *testing.T) {
+func TestBuildGatewayUpdateOpts(t *testing.T) {
 	tests := []struct {
 		name            string
-		spec            networkv1alpha1.NATGatewayParameters
+		spec            natv1alpha1.GatewayParameters
 		observed        natgateways.NatGateway
 		wantNeedsUpdate bool
 		wantName        string
@@ -294,7 +294,7 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 	}{
 		{
 			name: "no changes",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("desc"),
 				Size:        "2",
@@ -310,7 +310,7 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 		},
 		{
 			name: "name changed",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "new-name",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -325,7 +325,7 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 		},
 		{
 			name: "size changed",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "3",
 				VPCID:    pointer.To("vpc-123"),
@@ -340,7 +340,7 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 		},
 		{
 			name: "description changed",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("new desc"),
 				Size:        "1",
@@ -357,7 +357,7 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 		},
 		{
 			name: "nil description is no-op",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -373,7 +373,7 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			opts, needsUpdate := buildNATGatewayUpdateOpts(tt.spec, tt.observed)
+			opts, needsUpdate := buildGatewayUpdateOpts(tt.spec, tt.observed)
 			if needsUpdate != tt.wantNeedsUpdate {
 				t.Errorf("needsUpdate = %v, want %v", needsUpdate, tt.wantNeedsUpdate)
 			}
@@ -392,16 +392,16 @@ func TestBuildNATGatewayUpdateOpts(t *testing.T) {
 	}
 }
 
-func TestValidateImmutableNATGatewayFields(t *testing.T) {
+func TestValidateImmutableGatewayFields(t *testing.T) {
 	tests := []struct {
 		name     string
-		spec     networkv1alpha1.NATGatewayParameters
+		spec     natv1alpha1.GatewayParameters
 		observed natgateways.NatGateway
 		wantErr  bool
 	}{
 		{
 			name: "all unchanged",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -415,7 +415,7 @@ func TestValidateImmutableNATGatewayFields(t *testing.T) {
 		},
 		{
 			name: "nil optional immutables are ok",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name: "my-nat",
 				Size: "1",
 			},
@@ -427,7 +427,7 @@ func TestValidateImmutableNATGatewayFields(t *testing.T) {
 		},
 		{
 			name: "vpcId changed",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-new"),
@@ -441,7 +441,7 @@ func TestValidateImmutableNATGatewayFields(t *testing.T) {
 		},
 		{
 			name: "subnetId changed",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:     "my-nat",
 				Size:     "1",
 				VPCID:    pointer.To("vpc-123"),
@@ -456,10 +456,10 @@ func TestValidateImmutableNATGatewayFields(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateImmutableNATGatewayFields(tt.spec, tt.observed)
+			err := validateImmutableGatewayFields(tt.spec, tt.observed)
 			if (err != nil) != tt.wantErr {
 				t.Errorf(
-					"validateImmutableNATGatewayFields() error = %v, wantErr %v",
+					"validateImmutableGatewayFields() error = %v, wantErr %v",
 					err,
 					tt.wantErr,
 				)
@@ -468,10 +468,10 @@ func TestValidateImmutableNATGatewayFields(t *testing.T) {
 	}
 }
 
-func TestLateInitializeNATGateway(t *testing.T) {
+func TestLateInitializeGateway(t *testing.T) {
 	tests := []struct {
 		name        string
-		spec        networkv1alpha1.NATGatewayParameters
+		spec        natv1alpha1.GatewayParameters
 		observed    natgateways.NatGateway
 		tags        map[string]string
 		wantChanged bool
@@ -482,7 +482,7 @@ func TestLateInitializeNATGateway(t *testing.T) {
 	}{
 		{
 			name: "unset fields get late-initialized",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name: "my-nat",
 				Size: "1",
 			},
@@ -501,7 +501,7 @@ func TestLateInitializeNATGateway(t *testing.T) {
 		},
 		{
 			name: "already set fields are not overwritten",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name:        "my-nat",
 				Description: pointer.To("my desc"),
 				Size:        "1",
@@ -524,7 +524,7 @@ func TestLateInitializeNATGateway(t *testing.T) {
 		},
 		{
 			name: "empty observed values are not late-initialized",
-			spec: networkv1alpha1.NATGatewayParameters{
+			spec: natv1alpha1.GatewayParameters{
 				Name: "my-nat",
 				Size: "1",
 			},
@@ -541,13 +541,13 @@ func TestLateInitializeNATGateway(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cr := &networkv1alpha1.NATGateway{
-				Spec: networkv1alpha1.NATGatewaySpec{
+			cr := &natv1alpha1.Gateway{
+				Spec: natv1alpha1.GatewaySpec{
 					ForProvider: tt.spec,
 				},
 			}
 			li := resource.NewLateInitializer()
-			lateInitializeNATGateway(cr, tt.observed, tt.tags, li)
+			lateInitializeGateway(cr, tt.observed, tt.tags, li)
 
 			if li.IsChanged() != tt.wantChanged {
 				t.Errorf("IsChanged() = %v, want %v", li.IsChanged(), tt.wantChanged)

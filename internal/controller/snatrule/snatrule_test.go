@@ -6,19 +6,19 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/networking/v2/extensions/snatrules"
 
-	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
+	natv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
 
 func TestBuildCreateOpts(t *testing.T) {
 	tests := []struct {
 		name string
-		spec networkv1alpha1.SNATRuleParameters
+		spec natv1alpha1.SNATRuleParameters
 		want snatrules.CreateOpts
 	}{
 		{
 			name: "with subnetId",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -33,7 +33,7 @@ func TestBuildCreateOpts(t *testing.T) {
 		},
 		{
 			name: "with cidr",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				CIDR:         pointer.To("192.168.1.0/24"),
@@ -50,7 +50,7 @@ func TestBuildCreateOpts(t *testing.T) {
 		},
 		{
 			name: "minimal with subnetId and no source_type",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -77,14 +77,14 @@ func TestBuildCreateOpts(t *testing.T) {
 func TestIsSNATRuleUpToDate(t *testing.T) {
 	tests := []struct {
 		name       string
-		spec       networkv1alpha1.SNATRuleParameters
+		spec       natv1alpha1.SNATRuleParameters
 		observed   *snatrules.SnatRule
 		sourceType int
 		want       bool
 	}{
 		{
 			name: "all fields match",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -102,7 +102,7 @@ func TestIsSNATRuleUpToDate(t *testing.T) {
 		},
 		{
 			name: "nil optional fields are up-to-date",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -118,7 +118,7 @@ func TestIsSNATRuleUpToDate(t *testing.T) {
 		},
 		{
 			name: "natGatewayId mismatch",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-different"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -133,7 +133,7 @@ func TestIsSNATRuleUpToDate(t *testing.T) {
 		},
 		{
 			name: "elasticIpId mismatch",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-different"),
 				SubnetID:     pointer.To("net-789"),
@@ -148,7 +148,7 @@ func TestIsSNATRuleUpToDate(t *testing.T) {
 		},
 		{
 			name: "description mismatch",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -165,7 +165,7 @@ func TestIsSNATRuleUpToDate(t *testing.T) {
 		},
 		{
 			name: "cidr match",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				CIDR:         pointer.To("10.0.0.0/8"),
@@ -180,7 +180,7 @@ func TestIsSNATRuleUpToDate(t *testing.T) {
 		},
 		{
 			name: "cidr mismatch",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				CIDR:         pointer.To("10.0.0.0/16"),
@@ -233,7 +233,7 @@ func TestConvertSourceType(t *testing.T) {
 func TestLateInitializeSNATRule(t *testing.T) {
 	tests := []struct {
 		name           string
-		spec           networkv1alpha1.SNATRuleParameters
+		spec           natv1alpha1.SNATRuleParameters
 		observed       *snatrules.SnatRule
 		sourceType     int
 		wantChanged    bool
@@ -244,7 +244,7 @@ func TestLateInitializeSNATRule(t *testing.T) {
 	}{
 		{
 			name: "late-init unset fields",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 			},
@@ -260,7 +260,7 @@ func TestLateInitializeSNATRule(t *testing.T) {
 		},
 		{
 			name: "already-set fields not overwritten",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-original"),
@@ -279,7 +279,7 @@ func TestLateInitializeSNATRule(t *testing.T) {
 		},
 		{
 			name: "zero observed values are not late-initialized",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 			},
@@ -295,8 +295,8 @@ func TestLateInitializeSNATRule(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cr := &networkv1alpha1.SNATRule{
-				Spec: networkv1alpha1.SNATRuleSpec{
+			cr := &natv1alpha1.SNATRule{
+				Spec: natv1alpha1.SNATRuleSpec{
 					ForProvider: tt.spec,
 				},
 			}
@@ -341,12 +341,12 @@ func TestLateInitializeSNATRule(t *testing.T) {
 func TestValidateSNATRuleParameters(t *testing.T) {
 	tests := []struct {
 		name    string
-		spec    networkv1alpha1.SNATRuleParameters
+		spec    natv1alpha1.SNATRuleParameters
 		wantErr string
 	}{
 		{
 			name: "valid with subnetId",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -354,7 +354,7 @@ func TestValidateSNATRuleParameters(t *testing.T) {
 		},
 		{
 			name: "valid with cidr",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				CIDR:         pointer.To("10.0.0.0/8"),
@@ -362,7 +362,7 @@ func TestValidateSNATRuleParameters(t *testing.T) {
 		},
 		{
 			name: "empty natGatewayId",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				ElasticIPID: pointer.To("eip-456"),
 				SubnetID:    pointer.To("net-789"),
 			},
@@ -370,7 +370,7 @@ func TestValidateSNATRuleParameters(t *testing.T) {
 		},
 		{
 			name: "empty elasticIpId",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				SubnetID:     pointer.To("net-789"),
 			},
@@ -378,7 +378,7 @@ func TestValidateSNATRuleParameters(t *testing.T) {
 		},
 		{
 			name: "both subnetId and cidr",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 				SubnetID:     pointer.To("net-789"),
@@ -388,7 +388,7 @@ func TestValidateSNATRuleParameters(t *testing.T) {
 		},
 		{
 			name: "neither subnetId nor cidr",
-			spec: networkv1alpha1.SNATRuleParameters{
+			spec: natv1alpha1.SNATRuleParameters{
 				NatGatewayID: pointer.To("gw-123"),
 				ElasticIPID:  pointer.To("eip-456"),
 			},

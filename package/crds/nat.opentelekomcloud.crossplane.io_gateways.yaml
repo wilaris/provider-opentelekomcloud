@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.20.1
-  name: snatrules.network.opentelekomcloud.crossplane.io
+  name: gateways.nat.opentelekomcloud.crossplane.io
 spec:
-  group: network.opentelekomcloud.crossplane.io
+  group: nat.opentelekomcloud.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - opentelekomcloud
-    kind: SNATRule
-    listKind: SNATRuleList
-    plural: snatrules
-    singular: snatrule
+    kind: Gateway
+    listKind: GatewayList
+    plural: gateways
+    singular: gateway
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -28,6 +28,9 @@ spec:
     - jsonPath: .metadata.annotations.crossplane\.io/external-name
       name: EXTERNAL-NAME
       type: string
+    - jsonPath: .spec.forProvider.size
+      name: SIZE
+      type: string
     - jsonPath: .status.atProvider.status
       name: STATUS
       type: string
@@ -37,8 +40,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A SNATRule is a managed resource that represents an OpenTelekomCloud
-          NAT SNAT Rule.
+        description: A Gateway is a managed resource that represents an OpenTelekomCloud
+          NAT Gateway.
         properties:
           apiVersion:
             description: |-
@@ -58,207 +61,32 @@ spec:
           metadata:
             type: object
           spec:
-            description: A SNATRuleSpec defines the desired state of a SNATRule.
+            description: A GatewaySpec defines the desired state of a Gateway.
             properties:
               forProvider:
-                description: |-
-                  SNATRuleParameters are the configurable fields of a SNATRule.
-                  All fields are immutable after creation — the OTC API does not support updates.
+                description: GatewayParameters are the configurable fields of a Gateway.
                 properties:
-                  cidr:
-                    description: |-
-                      CIDR is the CIDR block for this SNAT rule.
-                      If sourceType is VPC, CIDR must be a subset of the VPC subnet CIDR.
-                      Mutually exclusive with subnetId.
-                    type: string
                   description:
-                    description: Description provides supplementary information about
-                      the SNAT rule.
+                    description: Description is the NAT gateway description.
                     maxLength: 255
                     type: string
-                  elasticIpId:
-                    description: ElasticIPID is the ID of the Elastic IP for this
-                      SNAT rule.
+                  name:
+                    description: Name is the NAT gateway name.
+                    maxLength: 64
+                    minLength: 1
                     type: string
-                  elasticIpIdRef:
-                    description: ElasticIPIDRef is a namespaced reference to an ElasticIP
-                      to populate elasticIpId.
-                    properties:
-                      name:
-                        description: Name of the referenced object.
-                        type: string
-                      namespace:
-                        description: Namespace of the referenced object
-                        type: string
-                      policy:
-                        description: Policies for referencing.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    required:
-                    - name
-                    type: object
-                  elasticIpIdSelector:
-                    description: ElasticIPIDSelector selects a namespaced reference
-                      to an ElasticIP to populate elasticIpId.
-                    properties:
-                      matchControllerRef:
-                        description: |-
-                          MatchControllerRef ensures an object with the same controller reference
-                          as the selecting object is selected.
-                        type: boolean
-                      matchLabels:
-                        additionalProperties:
-                          type: string
-                        description: MatchLabels ensures an object with matching labels
-                          is selected.
-                        type: object
-                      namespace:
-                        description: Namespace for the selector
-                        type: string
-                      policy:
-                        description: Policies for selection.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    type: object
-                  natGatewayId:
-                    description: NatGatewayID is the ID of the NAT gateway this SNAT
-                      rule belongs to.
-                    type: string
-                  natGatewayIdRef:
-                    description: NatGatewayIDRef is a namespaced reference to a NATGateway
-                      to populate natGatewayId.
-                    properties:
-                      name:
-                        description: Name of the referenced object.
-                        type: string
-                      namespace:
-                        description: Namespace of the referenced object
-                        type: string
-                      policy:
-                        description: Policies for referencing.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    required:
-                    - name
-                    type: object
-                  natGatewayIdSelector:
-                    description: NatGatewayIDSelector selects a namespaced reference
-                      to a NATGateway to populate natGatewayId.
-                    properties:
-                      matchControllerRef:
-                        description: |-
-                          MatchControllerRef ensures an object with the same controller reference
-                          as the selecting object is selected.
-                        type: boolean
-                      matchLabels:
-                        additionalProperties:
-                          type: string
-                        description: MatchLabels ensures an object with matching labels
-                          is selected.
-                        type: object
-                      namespace:
-                        description: Namespace for the selector
-                        type: string
-                      policy:
-                        description: Policies for selection.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    type: object
-                  sourceType:
+                  size:
                     description: |-
-                      SourceType is the SNAT rule source type.
-                      VPC means either subnetId or cidr can be specified.
+                      Size is the NAT gateway specification (tier).
+                      "1" = small, "2" = medium, "3" = large, "4" = extra-large.
                     enum:
-                    - VPC
+                    - "1"
+                    - "2"
+                    - "3"
+                    - "4"
                     type: string
                   subnetId:
-                    description: |-
-                      SubnetID is the ID of the subnet for this SNAT rule.
-                      Mutually exclusive with cidr.
+                    description: SubnetID is the ID of the subnet for the NAT gateway.
                     type: string
                   subnetIdRef:
                     description: SubnetIDRef is a namespaced reference to a Subnet
@@ -342,26 +170,111 @@ spec:
                             type: string
                         type: object
                     type: object
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: Tags are NAT gateway tags.
+                    maxProperties: 20
+                    type: object
+                  vpcId:
+                    description: VPCID is the ID of the VPC this NAT gateway belongs
+                      to.
+                    type: string
+                  vpcIdRef:
+                    description: VPCIDRef is a namespaced reference to a VPC to populate
+                      vpcId.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                      namespace:
+                        description: Namespace of the referenced object
+                        type: string
+                      policy:
+                        description: Policies for referencing.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: |-
+                              Resolution specifies whether resolution of this reference is required.
+                              The default is 'Required', which means the reconcile will fail if the
+                              reference cannot be resolved. 'Optional' means this reference will be
+                              a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: |-
+                              Resolve specifies when this reference should be resolved. The default
+                              is 'IfNotPresent', which will attempt to resolve the reference only when
+                              the corresponding field is not present. Use 'Always' to resolve the
+                              reference on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    required:
+                    - name
+                    type: object
+                  vpcIdSelector:
+                    description: VPCIDSelector selects a namespaced reference to a
+                      VPC to populate vpcId.
+                    properties:
+                      matchControllerRef:
+                        description: |-
+                          MatchControllerRef ensures an object with the same controller reference
+                          as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                      namespace:
+                        description: Namespace for the selector
+                        type: string
+                      policy:
+                        description: Policies for selection.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: |-
+                              Resolution specifies whether resolution of this reference is required.
+                              The default is 'Required', which means the reconcile will fail if the
+                              reference cannot be resolved. 'Optional' means this reference will be
+                              a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: |-
+                              Resolve specifies when this reference should be resolved. The default
+                              is 'IfNotPresent', which will attempt to resolve the reference only when
+                              the corresponding field is not present. Use 'Always' to resolve the
+                              reference on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    type: object
+                required:
+                - name
+                - size
                 type: object
                 x-kubernetes-validations:
-                - message: one of natGatewayId, natGatewayIdRef or natGatewayIdSelector
-                    is required
-                  rule: has(self.natGatewayId) || has(self.natGatewayIdRef) || has(self.natGatewayIdSelector)
-                - message: one of elasticIpId, elasticIpIdRef or elasticIpIdSelector
-                    is required
-                  rule: has(self.elasticIpId) || has(self.elasticIpIdRef) || has(self.elasticIpIdSelector)
-                - message: natGatewayId is immutable after creation
-                  rule: oldSelf.natGatewayId == null || self.natGatewayId == oldSelf.natGatewayId
-                - message: elasticIpId is immutable after creation
-                  rule: oldSelf.elasticIpId == null || self.elasticIpId == oldSelf.elasticIpId
+                - message: one of vpcId, vpcIdRef or vpcIdSelector is required
+                  rule: has(self.vpcId) || has(self.vpcIdRef) || has(self.vpcIdSelector)
+                - message: vpcId is immutable after creation
+                  rule: oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId
+                - message: one of subnetId, subnetIdRef or subnetIdSelector is required
+                  rule: has(self.subnetId) || has(self.subnetIdRef) || has(self.subnetIdSelector)
                 - message: subnetId is immutable after creation
                   rule: oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId
-                - message: cidr is immutable after creation
-                  rule: oldSelf.cidr == null || self.cidr == oldSelf.cidr
-                - message: sourceType is immutable after creation
-                  rule: oldSelf.sourceType == null || self.sourceType == oldSelf.sourceType
-                - message: description is immutable after creation
-                  rule: oldSelf.description == null || self.description == oldSelf.description
               managementPolicies:
                 default:
                 - '*'
@@ -421,44 +334,40 @@ spec:
             - forProvider
             type: object
           status:
-            description: A SNATRuleStatus represents the observed state of a SNATRule.
+            description: A GatewayStatus represents the observed state of a Gateway.
             properties:
               atProvider:
-                description: SNATRuleObservation are the observable fields of a SNATRule.
+                description: GatewayObservation are the observable fields of a Gateway.
                 properties:
                   adminStateUp:
                     description: AdminStateUp is the observed administrative state.
                     type: boolean
-                  cidr:
-                    description: CIDR is the observed CIDR block.
-                    type: string
                   description:
-                    description: Description is the observed description.
-                    type: string
-                  elasticIpAddress:
-                    description: ElasticIPAddress is the observed Elastic IP address.
-                    type: string
-                  elasticIpId:
-                    description: ElasticIPID is the observed Elastic IP ID.
+                    description: Description is the observed NAT gateway description.
                     type: string
                   id:
-                    description: ID is the OTC SNAT rule ID.
+                    description: ID is the OTC NAT gateway ID.
                     type: string
-                  natGatewayId:
-                    description: NatGatewayID is the observed NAT gateway ID.
+                  name:
+                    description: Name is the observed NAT gateway name.
                     type: string
-                  sourceType:
-                    description: SourceType is the observed source type (0 = VPC,
-                      1 = Direct Connect).
-                    type: integer
+                  size:
+                    description: Size is the observed NAT gateway specification (tier).
+                    type: string
                   status:
-                    description: Status is the observed SNAT rule status.
+                    description: Status is the observed NAT gateway lifecycle status.
                     type: string
                   subnetId:
-                    description: SubnetID is the observed subnet ID.
+                    description: SubnetID is the observed subnet (internal network)
+                      ID.
                     type: string
-                  tenantId:
-                    description: TenantID is the project to which the rule belongs.
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: Tags are observed NAT gateway tags.
+                    type: object
+                  vpcId:
+                    description: VPCID is the observed VPC (router) ID.
                     type: string
                 type: object
               conditions:

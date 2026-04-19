@@ -21,7 +21,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
+	natv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1"
 	apisv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/clients"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
@@ -48,16 +48,16 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		if err := Setup(mgr, o); err != nil {
 			panic(errors.Wrap(err, "cannot setup SNATRule controller"))
 		}
-	}, networkv1alpha1.SNATRuleGroupVersionKind)
+	}, natv1alpha1.SNATRuleGroupVersionKind)
 	return nil
 }
 
 // Setup adds a controller that reconciles SNATRule managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(networkv1alpha1.SNATRuleGroupKind)
+	name := managed.ControllerName(natv1alpha1.SNATRuleGroupKind)
 
 	opts := []managed.ReconcilerOption{
-		managed.WithTypedExternalConnector[*networkv1alpha1.SNATRule](&connector{
+		managed.WithTypedExternalConnector[*natv1alpha1.SNATRule](&connector{
 			kube: mgr.GetClient(),
 			usage: resource.NewProviderConfigUsageTracker(
 				mgr.GetClient(),
@@ -91,20 +91,20 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 			mgr.GetClient(),
 			o.Logger,
 			o.MetricOptions.MRStateMetrics,
-			&networkv1alpha1.SNATRuleList{},
+			&natv1alpha1.SNATRuleList{},
 			o.MetricOptions.PollStateMetricInterval,
 		)
 		if err := mgr.Add(stateMetricsRecorder); err != nil {
 			return errors.Wrap(
 				err,
-				"cannot register MR state metrics recorder for kind networkv1alpha1.SNATRuleList",
+				"cannot register MR state metrics recorder for kind natv1alpha1.SNATRuleList",
 			)
 		}
 	}
 
 	r := managed.NewReconciler(
 		mgr,
-		resource.ManagedKind(networkv1alpha1.SNATRuleGroupVersionKind),
+		resource.ManagedKind(natv1alpha1.SNATRuleGroupVersionKind),
 		opts...,
 	)
 
@@ -112,13 +112,13 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&networkv1alpha1.SNATRule{}).
+		For(&natv1alpha1.SNATRule{}).
 		Watches(&apisv1alpha1.ProviderConfig{}, &resource.EnqueueRequestForProviderConfig{}).
 		Watches(&apisv1alpha1.ClusterProviderConfig{}, &resource.EnqueueRequestForProviderConfig{}).
 		Complete(ratelimiter.NewReconciler(name, errors.WithSilentRequeueOnConflict(r), o.GlobalRateLimiter))
 }
 
-var _ managed.TypedExternalConnector[*networkv1alpha1.SNATRule] = (*connector)(nil)
+var _ managed.TypedExternalConnector[*natv1alpha1.SNATRule] = (*connector)(nil)
 
 type connector struct {
 	kube        client.Client
@@ -128,8 +128,8 @@ type connector struct {
 
 func (c *connector) Connect(
 	ctx context.Context,
-	mg *networkv1alpha1.SNATRule,
-) (managed.TypedExternalClient[*networkv1alpha1.SNATRule], error) {
+	mg *natv1alpha1.SNATRule,
+) (managed.TypedExternalClient[*natv1alpha1.SNATRule], error) {
 	if err := c.usage.Track(ctx, mg); err != nil {
 		return nil, errors.Wrap(err, errTrackPCUsage)
 	}
@@ -153,7 +153,7 @@ func (c *connector) Connect(
 	return &external{natV2Client: natV2Client}, nil
 }
 
-var _ managed.TypedExternalClient[*networkv1alpha1.SNATRule] = (*external)(nil)
+var _ managed.TypedExternalClient[*natv1alpha1.SNATRule] = (*external)(nil)
 
 type external struct {
 	natV2Client *golangsdk.ServiceClient
@@ -161,7 +161,7 @@ type external struct {
 
 func (e *external) Observe(
 	_ context.Context,
-	cr *networkv1alpha1.SNATRule,
+	cr *natv1alpha1.SNATRule,
 ) (managed.ExternalObservation, error) {
 	externalName := meta.GetExternalName(cr)
 	if externalName == "" {
@@ -179,7 +179,7 @@ func (e *external) Observe(
 	sourceType := convertSourceType(observed.SourceType)
 
 	// set observation
-	cr.Status.AtProvider = networkv1alpha1.SNATRuleObservation{
+	cr.Status.AtProvider = natv1alpha1.SNATRuleObservation{
 		ID:               observed.ID,
 		NatGatewayID:     observed.NatGatewayID,
 		SubnetID:         observed.NetworkID,
@@ -208,7 +208,7 @@ func (e *external) Observe(
 
 func (e *external) Create(
 	_ context.Context,
-	cr *networkv1alpha1.SNATRule,
+	cr *natv1alpha1.SNATRule,
 ) (managed.ExternalCreation, error) {
 	if err := validateSNATRuleParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, err
@@ -227,14 +227,14 @@ func (e *external) Create(
 
 func (e *external) Update(
 	_ context.Context,
-	_ *networkv1alpha1.SNATRule,
+	_ *natv1alpha1.SNATRule,
 ) (managed.ExternalUpdate, error) {
 	return managed.ExternalUpdate{}, errors.New(errUpdateSNATRule)
 }
 
 func (e *external) Delete(
 	_ context.Context,
-	cr *networkv1alpha1.SNATRule,
+	cr *natv1alpha1.SNATRule,
 ) (managed.ExternalDelete, error) {
 	externalName := meta.GetExternalName(cr)
 	if externalName == "" {
@@ -255,7 +255,7 @@ func (e *external) Disconnect(context.Context) error {
 	return nil
 }
 
-func validateSNATRuleParameters(p networkv1alpha1.SNATRuleParameters) error {
+func validateSNATRuleParameters(p natv1alpha1.SNATRuleParameters) error {
 	if pointer.Deref(p.NatGatewayID, "") == "" {
 		return errors.New(errEmptyNatGateway)
 	}
@@ -275,7 +275,7 @@ func validateSNATRuleParameters(p networkv1alpha1.SNATRuleParameters) error {
 	return nil
 }
 
-func buildCreateOpts(spec networkv1alpha1.SNATRuleParameters) snatrules.CreateOpts {
+func buildCreateOpts(spec natv1alpha1.SNATRuleParameters) snatrules.CreateOpts {
 	opts := snatrules.CreateOpts{
 		NatGatewayID: pointer.Deref(spec.NatGatewayID, ""),
 		FloatingIPID: pointer.Deref(spec.ElasticIPID, ""),
@@ -293,7 +293,7 @@ func buildCreateOpts(spec networkv1alpha1.SNATRuleParameters) snatrules.CreateOp
 	return opts
 }
 
-func (e *external) setConditions(cr *networkv1alpha1.SNATRule, observedStatus string) {
+func (e *external) setConditions(cr *natv1alpha1.SNATRule, observedStatus string) {
 	switch observedStatus {
 	case "ACTIVE":
 		cr.Status.SetConditions(xpv1.Available())
@@ -332,7 +332,7 @@ func sourceTypeIntToString(i int) string {
 }
 
 func lateInitializeSNATRule(
-	cr *networkv1alpha1.SNATRule,
+	cr *natv1alpha1.SNATRule,
 	observed *snatrules.SnatRule,
 	sourceType int,
 	li *resource.LateInitializer,
@@ -352,7 +352,7 @@ func lateInitializeSNATRule(
 }
 
 func isSNATRuleUpToDate(
-	spec networkv1alpha1.SNATRuleParameters,
+	spec natv1alpha1.SNATRuleParameters,
 	observed *snatrules.SnatRule,
 	sourceType int,
 ) bool {

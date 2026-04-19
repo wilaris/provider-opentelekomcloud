@@ -22,16 +22,16 @@ import (
 // +kubebuilder:validation:XValidation:rule="oldSelf.description == null || self.description == oldSelf.description",message="description is immutable after creation"
 type SNATRuleParameters struct {
 	// NatGatewayID is the ID of the NAT gateway this SNAT rule belongs to.
-	// +crossplane:generate:reference:type=go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1.NATGateway
+	// +crossplane:generate:reference:type=go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1.Gateway
 	// +crossplane:generate:reference:extractor=github.com/crossplane/crossplane-runtime/v2/pkg/reference.ExternalName()
 	// +optional
 	NatGatewayID *string `json:"natGatewayId,omitempty"`
 
-	// NatGatewayIDRef is a namespaced reference to a NATGateway to populate natGatewayId.
+	// NatGatewayIDRef is a namespaced reference to a Gateway to populate natGatewayId.
 	// +optional
 	NatGatewayIDRef *xpv1.NamespacedReference `json:"natGatewayIdRef,omitempty"`
 
-	// NatGatewayIDSelector selects a namespaced reference to a NATGateway to populate natGatewayId.
+	// NatGatewayIDSelector selects a namespaced reference to a Gateway to populate natGatewayId.
 	// +optional
 	NatGatewayIDSelector *xpv1.NamespacedSelector `json:"natGatewayIdSelector,omitempty"`
 

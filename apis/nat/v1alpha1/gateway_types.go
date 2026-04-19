@@ -10,12 +10,12 @@ import (
 	xpv2 "github.com/crossplane/crossplane-runtime/v2/apis/common/v2"
 )
 
-// NATGatewayParameters are the configurable fields of a NATGateway.
+// GatewayParameters are the configurable fields of a Gateway.
 // +kubebuilder:validation:XValidation:rule="has(self.vpcId) || has(self.vpcIdRef) || has(self.vpcIdSelector)",message="one of vpcId, vpcIdRef or vpcIdSelector is required"
 // +kubebuilder:validation:XValidation:rule="oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId",message="vpcId is immutable after creation"
 // +kubebuilder:validation:XValidation:rule="has(self.subnetId) || has(self.subnetIdRef) || has(self.subnetIdSelector)",message="one of subnetId, subnetIdRef or subnetIdSelector is required"
 // +kubebuilder:validation:XValidation:rule="oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId",message="subnetId is immutable after creation"
-type NATGatewayParameters struct {
+type GatewayParameters struct {
 	// Name is the NAT gateway name.
 	// +kubebuilder:validation:MinLength=1
 	// +kubebuilder:validation:MaxLength=64
@@ -65,8 +65,8 @@ type NATGatewayParameters struct {
 	Tags map[string]string `json:"tags,omitempty"`
 }
 
-// NATGatewayObservation are the observable fields of a NATGateway.
-type NATGatewayObservation struct {
+// GatewayObservation are the observable fields of a Gateway.
+type GatewayObservation struct {
 	// ID is the OTC NAT gateway ID.
 	ID string `json:"id,omitempty"`
 
@@ -95,21 +95,21 @@ type NATGatewayObservation struct {
 	Tags map[string]string `json:"tags,omitempty"`
 }
 
-// A NATGatewaySpec defines the desired state of a NATGateway.
-type NATGatewaySpec struct {
+// A GatewaySpec defines the desired state of a Gateway.
+type GatewaySpec struct {
 	xpv2.ManagedResourceSpec `json:",inline"`
-	ForProvider              NATGatewayParameters `json:"forProvider"`
+	ForProvider              GatewayParameters `json:"forProvider"`
 }
 
-// A NATGatewayStatus represents the observed state of a NATGateway.
-type NATGatewayStatus struct {
+// A GatewayStatus represents the observed state of a Gateway.
+type GatewayStatus struct {
 	xpv1.ResourceStatus `json:",inline"`
-	AtProvider          NATGatewayObservation `json:"atProvider,omitempty"`
+	AtProvider          GatewayObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// A NATGateway is a managed resource that represents an OpenTelekomCloud NAT Gateway.
+// A Gateway is a managed resource that represents an OpenTelekomCloud NAT Gateway.
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
@@ -118,31 +118,31 @@ type NATGatewayStatus struct {
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Namespaced,categories={crossplane,managed,opentelekomcloud}
-type NATGateway struct {
+type Gateway struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   NATGatewaySpec   `json:"spec"`
-	Status NATGatewayStatus `json:"status,omitempty"`
+	Spec   GatewaySpec   `json:"spec"`
+	Status GatewayStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// NATGatewayList contains a list of NATGateway
-type NATGatewayList struct {
+// GatewayList contains a list of Gateway
+type GatewayList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NATGateway `json:"items"`
+	Items           []Gateway `json:"items"`
 }
 
-// NATGateway type metadata.
+// Gateway type metadata.
 var (
-	NATGatewayKind             = reflect.TypeOf(NATGateway{}).Name()
-	NATGatewayGroupKind        = schema.GroupKind{Group: Group, Kind: NATGatewayKind}.String()
-	NATGatewayKindAPIVersion   = NATGatewayKind + "." + SchemeGroupVersion.String()
-	NATGatewayGroupVersionKind = SchemeGroupVersion.WithKind(NATGatewayKind)
+	GatewayKind             = reflect.TypeOf(Gateway{}).Name()
+	GatewayGroupKind        = schema.GroupKind{Group: Group, Kind: GatewayKind}.String()
+	GatewayKindAPIVersion   = GatewayKind + "." + SchemeGroupVersion.String()
+	GatewayGroupVersionKind = SchemeGroupVersion.WithKind(GatewayKind)
 )
 
 func init() {
-	SchemeBuilder.Register(&NATGateway{}, &NATGatewayList{})
+	SchemeBuilder.Register(&Gateway{}, &GatewayList{})
 }
