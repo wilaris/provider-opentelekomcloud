@@ -5,6 +5,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/config"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/dnsprivatezone"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/dnspubliczone"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/elasticip"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/natgateway"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygroup"
@@ -21,6 +23,8 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		config.Setup,
 		elasticip.SetupGated,
 		natgateway.SetupGated,
+		dnsprivatezone.SetupGated,
+		dnspubliczone.SetupGated,
 		securitygroup.SetupGated,
 		securitygrouprule.SetupGated,
 		snatrule.SetupGated,
