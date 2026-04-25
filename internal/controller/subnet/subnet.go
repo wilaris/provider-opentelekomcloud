@@ -260,15 +260,6 @@ func (e *external) Create(
 	}
 	meta.SetExternalName(cr, created.ID)
 
-	err = e.reconcileTags(
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateSubnet)
-	}
-
 	return managed.ExternalCreation{}, nil
 }
 
