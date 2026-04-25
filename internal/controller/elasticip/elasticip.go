@@ -249,22 +249,6 @@ func (e *external) Create(
 	}
 	meta.SetExternalName(cr, created.ID)
 
-	// Bind port
-	if portID := pointer.Deref(cr.Spec.ForProvider.PublicIP.PortID, ""); portID != "" {
-		if err := e.bindPort(created.ID, portID); err != nil {
-			return managed.ExternalCreation{}, errors.Wrap(err, errUpdateEIP)
-		}
-	}
-
-	err = e.reconcileTags(
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateEIP)
-	}
-
 	return managed.ExternalCreation{}, nil
 }
 
@@ -374,12 +358,6 @@ func buildCreateOpts(spec networkv1alpha1.ElasticIPParameters) eips.ApplyOpts {
 		IP:        ipOpts,
 		Bandwidth: bwOpts,
 	}
-}
-
-func (e *external) bindPort(eipID, portID string) error {
-	updateOps := eips.UpdateOpts{PortID: portID}
-	_, err := eips.Update(e.networkV1Client, eipID, updateOps).Extract()
-	return err
 }
 
 func (e *external) updateBandwidth(

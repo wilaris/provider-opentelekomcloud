@@ -12,10 +12,10 @@ import (
 
 // ElasticIPParameters are the configurable fields of an ElasticIP.
 // +kubebuilder:validation:XValidation:rule="self.publicIp.type == oldSelf.publicIp.type",message="publicIp.type is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.publicIp.ipAddress == null || self.publicIp.ipAddress == oldSelf.publicIp.ipAddress",message="publicIp.ipAddress is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.publicIp.name == null || self.publicIp.name == oldSelf.publicIp.name",message="publicIp.name is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.publicIp.ipAddress) || self.publicIp.ipAddress == oldSelf.publicIp.ipAddress",message="publicIp.ipAddress is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.publicIp.name) || self.publicIp.name == oldSelf.publicIp.name",message="publicIp.name is immutable after creation"
 // +kubebuilder:validation:XValidation:rule="self.bandwidth.shareType == oldSelf.bandwidth.shareType",message="bandwidth.shareType is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.bandwidth.chargeMode == null || self.bandwidth.chargeMode == oldSelf.bandwidth.chargeMode",message="bandwidth.chargeMode is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.bandwidth.chargeMode) || self.bandwidth.chargeMode == oldSelf.bandwidth.chargeMode",message="bandwidth.chargeMode is immutable after creation"
 type ElasticIPParameters struct {
 	// PublicIP defines the public IP configuration.
 	PublicIP ElasticIPPublicIPParameters `json:"publicIp"`
