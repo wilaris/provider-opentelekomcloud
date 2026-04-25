@@ -4,6 +4,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	ctrl "sigs.k8s.io/controller-runtime"
 
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/ccecluster"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/config"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/dnsprivatezone"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/dnspubliczone"
@@ -22,6 +23,7 @@ import (
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
+		ccecluster.SetupGated,
 		elasticip.SetupGated,
 		natgateway.SetupGated,
 		dnsprivatezone.SetupGated,
