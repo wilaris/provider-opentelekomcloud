@@ -254,23 +254,6 @@ func (e *external) Create(
 	}
 	meta.SetExternalName(cr, created.ID)
 
-	err = e.reconcileTags(
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateVPC)
-	}
-	err = e.reconcileSecondaryCIDR(
-		created.ID,
-		"",
-		cr.Spec.ForProvider.SecondaryCIDR,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateVPC)
-	}
-
 	return managed.ExternalCreation{}, nil
 }
 
