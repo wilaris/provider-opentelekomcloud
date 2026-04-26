@@ -210,6 +210,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *networkv1alpha1.SecurityGroup,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validateSecurityGroupParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}

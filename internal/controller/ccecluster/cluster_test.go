@@ -1,17 +1,28 @@
 package ccecluster
 
 import (
+	"context"
 	"encoding/base64"
 	"testing"
 	"time"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/cce/v3/clusters"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	ccev1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/cce/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &ccev1alpha1.Cluster{}
+	meta.SetExternalName(cr, "existing-cluster")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestCCEClusterPollInterval(t *testing.T) {
 	stableInterval := 5 * time.Minute

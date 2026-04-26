@@ -242,6 +242,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *networkv1alpha1.VPC,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validateVPCParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}

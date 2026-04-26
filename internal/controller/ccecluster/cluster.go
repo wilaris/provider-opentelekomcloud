@@ -266,6 +266,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *ccev1alpha1.Cluster,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	spec := cr.Spec.ForProvider
 
 	if err := validateClusterSpec(spec); err != nil {

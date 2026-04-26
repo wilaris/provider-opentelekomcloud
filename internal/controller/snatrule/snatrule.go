@@ -222,6 +222,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *natv1alpha1.SNATRule,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validateSNATRuleParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, err
 	}

@@ -223,6 +223,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *natv1alpha1.Gateway,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validateGatewayParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}
@@ -234,15 +238,6 @@ func (e *external) Create(
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateGateway)
 	}
 	meta.SetExternalName(cr, created.ID)
-
-	err = e.reconcileTags(
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateGateway)
-	}
 
 	return managed.ExternalCreation{}, nil
 }

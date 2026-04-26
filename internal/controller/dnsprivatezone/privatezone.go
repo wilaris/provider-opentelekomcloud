@@ -221,6 +221,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *dnsv1alpha1.PrivateZone,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validatePrivateZoneParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}
@@ -232,28 +236,6 @@ func (e *external) Create(
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateZone)
 	}
 	meta.SetExternalName(cr, created.ID)
-
-	// Associate additional VPCs beyond the first (which was included in CreateOpts).
-	for i := 1; i < len(cr.Spec.ForProvider.VPCs); i++ {
-		v := cr.Spec.ForProvider.VPCs[i]
-		routerOpts := zones.RouterOpts{
-			RouterID:     pointer.Deref(v.VPCID, ""),
-			RouterRegion: e.region,
-		}
-		_, err := zones.AssociateZone(e.dnsV2Client, created.ID, routerOpts).Extract()
-		if err != nil {
-			return managed.ExternalCreation{}, errors.Wrap(err, errAssociateVPC)
-		}
-	}
-
-	err = e.reconcileTags(
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateZone)
-	}
 
 	return managed.ExternalCreation{}, nil
 }

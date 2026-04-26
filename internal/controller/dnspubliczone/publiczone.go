@@ -213,6 +213,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *dnsv1alpha1.PublicZone,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validatePublicZoneParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}
@@ -224,15 +228,6 @@ func (e *external) Create(
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateZone)
 	}
 	meta.SetExternalName(cr, created.ID)
-
-	err = e.reconcileTags(
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errUpdateZone)
-	}
 
 	return managed.ExternalCreation{}, nil
 }

@@ -1,15 +1,26 @@
 package dnsprivatezone
 
 import (
+	"context"
 	"maps"
 	"testing"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/dns/v2/zones"
 
 	dnsv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/dns/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &dnsv1alpha1.PrivateZone{}
+	meta.SetExternalName(cr, "existing-private-zone")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestValidatePrivateZoneParameters(t *testing.T) {
 	tests := []struct {

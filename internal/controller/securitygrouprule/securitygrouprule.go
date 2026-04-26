@@ -217,6 +217,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *networkv1alpha1.SecurityGroupRule,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	createOpts := buildCreateOpts(cr.Spec.ForProvider)
 
 	created, err := rules.Create(e.vpcV3Client, createOpts)

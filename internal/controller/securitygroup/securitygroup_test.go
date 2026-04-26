@@ -1,18 +1,29 @@
 package securitygroup
 
 import (
+	"context"
 	"maps"
 	"testing"
 
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/common/tags"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/vpc/v3/security/group"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
 	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 	"go.wilaris.de/provider-opentelekomcloud/internal/util"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &networkv1alpha1.SecurityGroup{}
+	meta.SetExternalName(cr, "existing-security-group")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestValidateSecurityGroupParameters(t *testing.T) {
 	tests := []struct {

@@ -1,14 +1,25 @@
 package vpc
 
 import (
+	"context"
 	"testing"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/networking/v1/vpcs"
 
 	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &networkv1alpha1.VPC{}
+	meta.SetExternalName(cr, "existing-vpc")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestValidateVPCParameters(t *testing.T) {
 	tests := []struct {

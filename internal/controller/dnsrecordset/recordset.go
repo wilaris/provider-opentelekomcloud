@@ -242,6 +242,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *dnsv1alpha1.RecordSet,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validateRecordSetParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}
@@ -258,16 +262,6 @@ func (e *external) Create(
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateRecordSet)
 	}
 	meta.SetExternalName(cr, created.ID)
-
-	err = e.reconcileTags(
-		zi.tagServiceType,
-		created.ID,
-		map[string]string{},
-		cr.Spec.ForProvider.Tags,
-	)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errCreateRecordSet)
-	}
 
 	return managed.ExternalCreation{}, nil
 }

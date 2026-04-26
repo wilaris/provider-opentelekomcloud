@@ -1,16 +1,27 @@
 package natgateway
 
 import (
+	"context"
 	"maps"
 	"testing"
 
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/networking/v2/extensions/natgateways"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
 	natv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &natv1alpha1.Gateway{}
+	meta.SetExternalName(cr, "existing-gateway")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestValidateGatewayParameters(t *testing.T) {
 	tests := []struct {

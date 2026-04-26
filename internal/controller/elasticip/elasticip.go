@@ -241,6 +241,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *networkv1alpha1.ElasticIP,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	createOpts := buildCreateOpts(cr.Spec.ForProvider)
 
 	created, err := eips.Apply(e.networkV1Client, createOpts).Extract()

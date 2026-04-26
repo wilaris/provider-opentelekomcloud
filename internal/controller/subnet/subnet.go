@@ -245,6 +245,10 @@ func (e *external) Create(
 	_ context.Context,
 	cr *networkv1alpha1.Subnet,
 ) (managed.ExternalCreation, error) {
+	if meta.GetExternalName(cr) != "" {
+		return managed.ExternalCreation{}, nil
+	}
+
 	if err := validateSubnetParameters(cr.Spec.ForProvider); err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}

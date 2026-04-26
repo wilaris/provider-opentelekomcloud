@@ -1,14 +1,25 @@
 package dnsrecordset
 
 import (
+	"context"
 	"slices"
 	"testing"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/dns/v2/recordsets"
 
 	dnsv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/dns/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &dnsv1alpha1.RecordSet{}
+	meta.SetExternalName(cr, "existing-record-set")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestGetZoneInfo(t *testing.T) {
 	tests := []struct {

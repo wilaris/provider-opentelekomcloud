@@ -1,14 +1,25 @@
 package securitygrouprule
 
 import (
+	"context"
 	"testing"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/vpc/v3/security/rules"
 
 	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCreateSkipsWhenExternalNameSet(t *testing.T) {
+	cr := &networkv1alpha1.SecurityGroupRule{}
+	meta.SetExternalName(cr, "existing-security-group-rule")
+
+	if _, err := (&external{}).Create(context.Background(), cr); err != nil {
+		t.Fatalf("Create() returned error for existing external-name: %v", err)
+	}
+}
 
 func TestIsSecurityGroupRuleUpToDate(t *testing.T) {
 	tests := []struct {
