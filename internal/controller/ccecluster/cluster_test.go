@@ -3,13 +3,90 @@ package ccecluster
 import (
 	"encoding/base64"
 	"testing"
+	"time"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/cce/v3/clusters"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	ccev1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/cce/v1alpha1"
 	"go.wilaris.de/provider-opentelekomcloud/internal/pointer"
 )
+
+func TestCCEClusterPollInterval(t *testing.T) {
+	stableInterval := 5 * time.Minute
+	fastInterval := 30 * time.Second
+
+	now := metav1.Now()
+
+	cases := map[string]struct {
+		cluster *ccev1alpha1.Cluster
+		want    time.Duration
+	}{
+		"EmptyStatus": {
+			cluster: &ccev1alpha1.Cluster{},
+			want:    fastInterval,
+		},
+		"Creating": {
+			cluster: &ccev1alpha1.Cluster{
+				Status: ccev1alpha1.ClusterStatus{
+					AtProvider: ccev1alpha1.ClusterObservation{Status: "Creating"},
+				},
+			},
+			want: fastInterval,
+		},
+		"Deleting": {
+			cluster: &ccev1alpha1.Cluster{
+				Status: ccev1alpha1.ClusterStatus{
+					AtProvider: ccev1alpha1.ClusterObservation{Status: "Deleting"},
+				},
+			},
+			want: fastInterval,
+		},
+		"Unavailable": {
+			cluster: &ccev1alpha1.Cluster{
+				Status: ccev1alpha1.ClusterStatus{
+					AtProvider: ccev1alpha1.ClusterObservation{Status: "Unavailable"},
+				},
+			},
+			want: fastInterval,
+		},
+		"Upgrading": {
+			cluster: &ccev1alpha1.Cluster{
+				Status: ccev1alpha1.ClusterStatus{
+					AtProvider: ccev1alpha1.ClusterObservation{Status: "Upgrading"},
+				},
+			},
+			want: fastInterval,
+		},
+		"Available": {
+			cluster: &ccev1alpha1.Cluster{
+				Status: ccev1alpha1.ClusterStatus{
+					AtProvider: ccev1alpha1.ClusterObservation{Status: "Available"},
+				},
+			},
+			want: stableInterval,
+		},
+		"DeletingObjectWithAvailableStatus": {
+			cluster: &ccev1alpha1.Cluster{
+				ObjectMeta: metav1.ObjectMeta{DeletionTimestamp: &now},
+				Status: ccev1alpha1.ClusterStatus{
+					AtProvider: ccev1alpha1.ClusterObservation{Status: "Available"},
+				},
+			},
+			want: fastInterval,
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			got := cceClusterPollInterval(tc.cluster, stableInterval)
+			if got != tc.want {
+				t.Errorf("cceClusterPollInterval() = %s, want %s", got, tc.want)
+			}
+		})
+	}
+}
 
 func TestIsClusterUpToDate(t *testing.T) {
 	cases := map[string]struct {

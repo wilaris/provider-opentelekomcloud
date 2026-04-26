@@ -88,7 +88,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		//nolint:staticcheck // controller-runtime recorder type mismatch with event.NewAPIRecorder.
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
 		managed.WithCreationGracePeriod(5 * time.Minute),
-		managed.WithPollJitterHook(60 * time.Second),
+		managed.WithPollIntervalHook(cceClusterPollInterval),
 		managed.WithTimeout(35 * time.Minute),
 	}
 
@@ -134,6 +134,20 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		Watches(&apisv1alpha1.ProviderConfig{}, &resource.EnqueueRequestForProviderConfig{}).
 		Watches(&apisv1alpha1.ClusterProviderConfig{}, &resource.EnqueueRequestForProviderConfig{}).
 		Complete(ratelimiter.NewReconciler(name, errors.WithSilentRequeueOnConflict(r), o.GlobalRateLimiter))
+}
+
+func cceClusterPollInterval(mg resource.Managed, pollInterval time.Duration) time.Duration {
+	cr, ok := mg.(*ccev1alpha1.Cluster)
+	if !ok {
+		return 30 * time.Second
+	}
+	if cr.GetDeletionTimestamp() != nil {
+		return 30 * time.Second
+	}
+	if cr.Status.AtProvider.Status != "Available" {
+		return 30 * time.Second
+	}
+	return pollInterval
 }
 
 var _ managed.TypedExternalConnector[*ccev1alpha1.Cluster] = (*connector)(nil)
