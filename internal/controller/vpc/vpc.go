@@ -407,8 +407,10 @@ func (e *external) observeTags(id string) (map[string]string, error) {
 
 func (e *external) setConditions(cr *networkv1alpha1.VPC, observedStatus string) {
 	switch observedStatus {
-	case "ACTIVE":
+	case "ACTIVE", "OK":
 		cr.Status.SetConditions(xpv1.Available())
+	case "CREATING":
+		cr.Status.SetConditions(xpv1.Creating())
 	default:
 		cr.Status.SetConditions(xpv1.Unavailable())
 	}
