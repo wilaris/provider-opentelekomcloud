@@ -317,7 +317,10 @@ func (e *external) Disconnect(context.Context) error {
 	return nil
 }
 
-func buildPrivateZoneCreateOpts(spec dnsv1alpha1.PrivateZoneParameters, region string) zones.CreateOpts {
+func buildPrivateZoneCreateOpts(
+	spec dnsv1alpha1.PrivateZoneParameters,
+	region string,
+) zones.CreateOpts {
 	opts := zones.CreateOpts{
 		Name:     spec.Name,
 		ZoneType: "private",

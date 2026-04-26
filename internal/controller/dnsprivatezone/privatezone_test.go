@@ -290,7 +290,11 @@ func TestBuildPrivateZoneCreateOpts(t *testing.T) {
 				t.Errorf("Router.RouterID = %v, want %v", got.Router.RouterID, tt.wantRouterID)
 			}
 			if got.Router.RouterRegion != tt.wantRouterRegion {
-				t.Errorf("Router.RouterRegion = %v, want %v", got.Router.RouterRegion, tt.wantRouterRegion)
+				t.Errorf(
+					"Router.RouterRegion = %v, want %v",
+					got.Router.RouterRegion,
+					tt.wantRouterRegion,
+				)
 			}
 		})
 	}
