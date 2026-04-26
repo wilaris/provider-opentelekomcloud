@@ -218,14 +218,16 @@ func TestIsPrivateZoneUpToDate(t *testing.T) {
 
 func TestBuildPrivateZoneCreateOpts(t *testing.T) {
 	tests := []struct {
-		name         string
-		spec         dnsv1alpha1.PrivateZoneParameters
-		wantName     string
-		wantZoneType string
-		wantEmail    string
-		wantTTL      int
-		wantDesc     string
-		wantRouterID string
+		name             string
+		spec             dnsv1alpha1.PrivateZoneParameters
+		region           string
+		wantName         string
+		wantZoneType     string
+		wantEmail        string
+		wantTTL          int
+		wantDesc         string
+		wantRouterID     string
+		wantRouterRegion string
 	}{
 		{
 			name: "minimal",
@@ -235,9 +237,11 @@ func TestBuildPrivateZoneCreateOpts(t *testing.T) {
 					{VPCID: pointer.To("vpc-123")},
 				},
 			},
-			wantName:     "example.com.",
-			wantZoneType: "private",
-			wantRouterID: "vpc-123",
+			region:           "eu-de",
+			wantName:         "example.com.",
+			wantZoneType:     "private",
+			wantRouterID:     "vpc-123",
+			wantRouterRegion: "eu-de",
 		},
 		{
 			name: "with all fields",
@@ -251,17 +255,19 @@ func TestBuildPrivateZoneCreateOpts(t *testing.T) {
 					{VPCID: pointer.To("vpc-second")},
 				},
 			},
-			wantName:     "example.com.",
-			wantZoneType: "private",
-			wantEmail:    "admin@example.com",
-			wantTTL:      600,
-			wantDesc:     "my zone",
-			wantRouterID: "vpc-first",
+			region:           "eu-nl",
+			wantName:         "example.com.",
+			wantZoneType:     "private",
+			wantEmail:        "admin@example.com",
+			wantTTL:          600,
+			wantDesc:         "my zone",
+			wantRouterID:     "vpc-first",
+			wantRouterRegion: "eu-nl",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := buildPrivateZoneCreateOpts(tt.spec)
+			got := buildPrivateZoneCreateOpts(tt.spec, tt.region)
 			if got.Name != tt.wantName {
 				t.Errorf("Name = %v, want %v", got.Name, tt.wantName)
 			}
@@ -282,6 +288,9 @@ func TestBuildPrivateZoneCreateOpts(t *testing.T) {
 			}
 			if got.Router.RouterID != tt.wantRouterID {
 				t.Errorf("Router.RouterID = %v, want %v", got.Router.RouterID, tt.wantRouterID)
+			}
+			if got.Router.RouterRegion != tt.wantRouterRegion {
+				t.Errorf("Router.RouterRegion = %v, want %v", got.Router.RouterRegion, tt.wantRouterRegion)
 			}
 		})
 	}

@@ -158,6 +158,7 @@ func (c *connector) Connect(
 
 	return &external{
 		dnsV2Client: dnsV2Client,
+		region:      providerClient.Region,
 	}, nil
 }
 
@@ -165,6 +166,7 @@ var _ managed.TypedExternalClient[*dnsv1alpha1.PrivateZone] = (*external)(nil)
 
 type external struct {
 	dnsV2Client *golangsdk.ServiceClient
+	region      string
 }
 
 func (e *external) Observe(
@@ -223,7 +225,7 @@ func (e *external) Create(
 		return managed.ExternalCreation{}, errors.Wrap(err, errValidateSpec)
 	}
 
-	createOpts := buildPrivateZoneCreateOpts(cr.Spec.ForProvider)
+	createOpts := buildPrivateZoneCreateOpts(cr.Spec.ForProvider, e.region)
 
 	created, err := zones.Create(e.dnsV2Client, createOpts).Extract()
 	if err != nil {
@@ -235,7 +237,8 @@ func (e *external) Create(
 	for i := 1; i < len(cr.Spec.ForProvider.VPCs); i++ {
 		v := cr.Spec.ForProvider.VPCs[i]
 		routerOpts := zones.RouterOpts{
-			RouterID: pointer.Deref(v.VPCID, ""),
+			RouterID:     pointer.Deref(v.VPCID, ""),
+			RouterRegion: e.region,
 		}
 		_, err := zones.AssociateZone(e.dnsV2Client, created.ID, routerOpts).Extract()
 		if err != nil {
@@ -275,6 +278,7 @@ func (e *external) Update(
 
 	err = e.reconcileVPCs(
 		externalName,
+		e.region,
 		cr.Spec.ForProvider.VPCs,
 		observed.Routers,
 	)
@@ -313,7 +317,7 @@ func (e *external) Disconnect(context.Context) error {
 	return nil
 }
 
-func buildPrivateZoneCreateOpts(spec dnsv1alpha1.PrivateZoneParameters) zones.CreateOpts {
+func buildPrivateZoneCreateOpts(spec dnsv1alpha1.PrivateZoneParameters, region string) zones.CreateOpts {
 	opts := zones.CreateOpts{
 		Name:     spec.Name,
 		ZoneType: "private",
@@ -330,7 +334,8 @@ func buildPrivateZoneCreateOpts(spec dnsv1alpha1.PrivateZoneParameters) zones.Cr
 	// First VPC is included in create opts.
 	if len(spec.VPCs) > 0 {
 		opts.Router = &zones.RouterOpts{
-			RouterID: pointer.Deref(spec.VPCs[0].VPCID, ""),
+			RouterID:     pointer.Deref(spec.VPCs[0].VPCID, ""),
+			RouterRegion: region,
 		}
 	}
 	return opts
@@ -375,6 +380,7 @@ func buildPrivateZoneUpdateOpts(
 
 func (e *external) reconcileVPCs(
 	zoneID string,
+	region string,
 	desired []dnsv1alpha1.VPC,
 	observed []zones.RouterResult,
 ) error {
@@ -395,7 +401,8 @@ func (e *external) reconcileVPCs(
 		vpcID := pointer.Deref(v.VPCID, "")
 		if _, exists := observedSet[vpcID]; !exists {
 			routerOpts := zones.RouterOpts{
-				RouterID: vpcID,
+				RouterID:     vpcID,
+				RouterRegion: region,
 			}
 			if _, err := zones.AssociateZone(e.dnsV2Client, zoneID, routerOpts).
 				Extract(); err != nil {
@@ -408,7 +415,8 @@ func (e *external) reconcileVPCs(
 	for _, r := range observed {
 		if _, exists := desiredSet[r.RouterID]; !exists {
 			routerOpts := zones.RouterOpts{
-				RouterID: r.RouterID,
+				RouterID:     r.RouterID,
+				RouterRegion: region,
 			}
 			if _, err := zones.DisassociateZone(e.dnsV2Client, zoneID, routerOpts).
 				Extract(); err != nil {
