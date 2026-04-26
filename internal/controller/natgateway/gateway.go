@@ -376,6 +376,10 @@ func (e *external) setConditions(cr *natv1alpha1.Gateway, observedStatus string)
 	switch observedStatus {
 	case "ACTIVE":
 		cr.Status.SetConditions(xpv1.Available())
+	case "PENDING_CREATE", "PENDING_UPDATE":
+		cr.Status.SetConditions(xpv1.Creating())
+	case "PENDING_DELETE":
+		cr.Status.SetConditions(xpv1.Deleting())
 	default:
 		cr.Status.SetConditions(xpv1.Unavailable())
 	}
