@@ -17,6 +17,7 @@ import (
 	golangsdk "github.com/opentelekomcloud/gophertelekomcloud"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack"
 	"github.com/opentelekomcloud/gophertelekomcloud/openstack/vpc/v3/security/rules"
+	"k8s.io/apimachinery/pkg/util/sets"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -70,7 +71,18 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	if o.Features.Enabled(feature.EnableBetaManagementPolicies) {
-		opts = append(opts, managed.WithManagementPolicies())
+		opts = append(
+			opts,
+			managed.WithManagementPolicies(),
+			managed.WithReconcilerSupportedManagementPolicies([]sets.Set[xpv1.ManagementAction]{
+				sets.New[xpv1.ManagementAction](xpv1.ManagementActionObserve),
+				sets.New[xpv1.ManagementAction](
+					xpv1.ManagementActionObserve,
+					xpv1.ManagementActionCreate,
+					xpv1.ManagementActionDelete,
+				),
+			}),
+		)
 	}
 
 	if o.Features.Enabled(feature.EnableAlphaChangeLogs) {
