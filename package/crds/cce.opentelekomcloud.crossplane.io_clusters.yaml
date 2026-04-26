@@ -783,62 +783,62 @@ spec:
                 - message: containerNetworkType is immutable after creation
                   rule: self.containerNetworkType == oldSelf.containerNetworkType
                 - message: vpcId is immutable after creation
-                  rule: oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId
+                  rule: '!has(oldSelf.vpcId) || self.vpcId == oldSelf.vpcId'
                 - message: subnetId is immutable after creation
-                  rule: oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId
+                  rule: '!has(oldSelf.subnetId) || self.subnetId == oldSelf.subnetId'
                 - message: securityGroupId is immutable after creation
-                  rule: oldSelf.securityGroupId == null || self.securityGroupId ==
-                    oldSelf.securityGroupId
+                  rule: '!has(oldSelf.securityGroupId) || self.securityGroupId ==
+                    oldSelf.securityGroupId'
                 - message: clusterVersion is immutable after creation
-                  rule: oldSelf.clusterVersion == null || self.clusterVersion == oldSelf.clusterVersion
+                  rule: '!has(oldSelf.clusterVersion) || self.clusterVersion == oldSelf.clusterVersion'
                 - message: containerNetworkCidr is immutable after creation
-                  rule: oldSelf.containerNetworkCidr == null || self.containerNetworkCidr
-                    == oldSelf.containerNetworkCidr
+                  rule: '!has(oldSelf.containerNetworkCidr) || self.containerNetworkCidr
+                    == oldSelf.containerNetworkCidr'
                 - message: authenticationMode is immutable after creation
-                  rule: oldSelf.authenticationMode == null || self.authenticationMode
-                    == oldSelf.authenticationMode
+                  rule: '!has(oldSelf.authenticationMode) || self.authenticationMode
+                    == oldSelf.authenticationMode'
                 - message: ipv6Enable is immutable after creation
-                  rule: oldSelf.ipv6Enable == null || self.ipv6Enable == oldSelf.ipv6Enable
+                  rule: '!has(oldSelf.ipv6Enable) || self.ipv6Enable == oldSelf.ipv6Enable'
                 - message: billingMode is immutable after creation
-                  rule: oldSelf.billingMode == null || self.billingMode == oldSelf.billingMode
+                  rule: '!has(oldSelf.billingMode) || self.billingMode == oldSelf.billingMode'
                 - message: highwaySubnetId is immutable after creation
-                  rule: oldSelf.highwaySubnetId == null || self.highwaySubnetId ==
-                    oldSelf.highwaySubnetId
+                  rule: '!has(oldSelf.highwaySubnetId) || self.highwaySubnetId ==
+                    oldSelf.highwaySubnetId'
                 - message: enableVolumeEncryption is immutable after creation
-                  rule: oldSelf.enableVolumeEncryption == null || self.enableVolumeEncryption
-                    == oldSelf.enableVolumeEncryption
+                  rule: '!has(oldSelf.enableVolumeEncryption) || self.enableVolumeEncryption
+                    == oldSelf.enableVolumeEncryption'
                 - message: eniSubnetId is immutable after creation
-                  rule: oldSelf.eniSubnetId == null || self.eniSubnetId == oldSelf.eniSubnetId
+                  rule: '!has(oldSelf.eniSubnetId) || self.eniSubnetId == oldSelf.eniSubnetId'
                 - message: eniSubnetCidr is immutable after creation
-                  rule: oldSelf.eniSubnetCidr == null || self.eniSubnetCidr == oldSelf.eniSubnetCidr
+                  rule: '!has(oldSelf.eniSubnetCidr) || self.eniSubnetCidr == oldSelf.eniSubnetCidr'
                 - message: kubeProxyMode is immutable after creation
-                  rule: oldSelf.kubeProxyMode == null || self.kubeProxyMode == oldSelf.kubeProxyMode
+                  rule: '!has(oldSelf.kubeProxyMode) || self.kubeProxyMode == oldSelf.kubeProxyMode'
                 - message: kubernetesSvcIpRange is immutable after creation
-                  rule: oldSelf.kubernetesSvcIpRange == null || self.kubernetesSvcIpRange
-                    == oldSelf.kubernetesSvcIpRange
+                  rule: '!has(oldSelf.kubernetesSvcIpRange) || self.kubernetesSvcIpRange
+                    == oldSelf.kubernetesSvcIpRange'
                 - message: multiAz is immutable after creation
-                  rule: oldSelf.multiAz == null || self.multiAz == oldSelf.multiAz
+                  rule: '!has(oldSelf.multiAz) || self.multiAz == oldSelf.multiAz'
                 - message: enableDeletionProtection is immutable after creation
-                  rule: oldSelf.enableDeletionProtection == null || self.enableDeletionProtection
-                    == oldSelf.enableDeletionProtection
+                  rule: '!has(oldSelf.enableDeletionProtection) || self.enableDeletionProtection
+                    == oldSelf.enableDeletionProtection'
                 - message: noAddons is immutable after creation
-                  rule: oldSelf.noAddons == null || self.noAddons == oldSelf.noAddons
+                  rule: '!has(oldSelf.noAddons) || self.noAddons == oldSelf.noAddons'
                 - message: masters is immutable after creation
-                  rule: oldSelf.masters == null || self.masters == oldSelf.masters
+                  rule: '!has(oldSelf.masters) || self.masters == oldSelf.masters'
                 - message: authenticatingProxy is immutable after creation
-                  rule: oldSelf.authenticatingProxy == null || self.authenticatingProxy
-                    == oldSelf.authenticatingProxy
+                  rule: '!has(oldSelf.authenticatingProxy) || self.authenticatingProxy
+                    == oldSelf.authenticatingProxy'
                 - message: labels is immutable after creation
-                  rule: oldSelf.labels == null || self.labels == oldSelf.labels
+                  rule: '!has(oldSelf.labels) || self.labels == oldSelf.labels'
                 - message: annotations is immutable after creation
-                  rule: oldSelf.annotations == null || self.annotations == oldSelf.annotations
+                  rule: '!has(oldSelf.annotations) || self.annotations == oldSelf.annotations'
                 - message: timezone is immutable after creation
-                  rule: oldSelf.timezone == null || self.timezone == oldSelf.timezone
+                  rule: '!has(oldSelf.timezone) || self.timezone == oldSelf.timezone'
                 - message: extendParam is immutable after creation
-                  rule: oldSelf.extendParam == null || self.extendParam == oldSelf.extendParam
+                  rule: '!has(oldSelf.extendParam) || self.extendParam == oldSelf.extendParam'
                 - message: apiAccessTrustlist is immutable after creation
-                  rule: oldSelf.apiAccessTrustlist == null || self.apiAccessTrustlist
-                    == oldSelf.apiAccessTrustlist
+                  rule: '!has(oldSelf.apiAccessTrustlist) || self.apiAccessTrustlist
+                    == oldSelf.apiAccessTrustlist'
                 - message: eniSubnetId and eniSubnetCidr must be set together
                   rule: has(self.eniSubnetId) == has(self.eniSubnetCidr)
                 - message: authenticatingProxy must be set when authenticationMode
@@ -849,7 +849,7 @@ spec:
                   rule: '!(has(self.masters) && has(self.multiAz) && self.multiAz)'
                 - message: customSan is immutable after creation (the CCE API has
                     no update path)
-                  rule: oldSelf.customSan == null || self.customSan == oldSelf.customSan
+                  rule: '!has(oldSelf.customSan) || self.customSan == oldSelf.customSan'
                 - message: deleteAllStorage cannot be combined with deleteEfs, deleteEvs,
                     deleteObs or deleteSfs
                   rule: '!has(self.deleteAllStorage) || (!has(self.deleteEfs) && !has(self.deleteEvs)

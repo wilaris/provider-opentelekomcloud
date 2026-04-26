@@ -12,9 +12,9 @@ import (
 
 // GatewayParameters are the configurable fields of a Gateway.
 // +kubebuilder:validation:XValidation:rule="has(self.vpcId) || has(self.vpcIdRef) || has(self.vpcIdSelector)",message="one of vpcId, vpcIdRef or vpcIdSelector is required"
-// +kubebuilder:validation:XValidation:rule="oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId",message="vpcId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.vpcId) || self.vpcId == oldSelf.vpcId",message="vpcId is immutable after creation"
 // +kubebuilder:validation:XValidation:rule="has(self.subnetId) || has(self.subnetIdRef) || has(self.subnetIdSelector)",message="one of subnetId, subnetIdRef or subnetIdSelector is required"
-// +kubebuilder:validation:XValidation:rule="oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId",message="subnetId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.subnetId) || self.subnetId == oldSelf.subnetId",message="subnetId is immutable after creation"
 type GatewayParameters struct {
 	// Name is the NAT gateway name.
 	// +kubebuilder:validation:MinLength=1

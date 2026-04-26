@@ -215,12 +215,12 @@ spec:
                 - message: gatewayIp is immutable after creation
                   rule: self.gatewayIp == oldSelf.gatewayIp
                 - message: ipv6Enable is immutable after creation
-                  rule: oldSelf.ipv6Enable == null || self.ipv6Enable == oldSelf.ipv6Enable
+                  rule: '!has(oldSelf.ipv6Enable) || self.ipv6Enable == oldSelf.ipv6Enable'
                 - message: availabilityZone is immutable after creation
-                  rule: oldSelf.availabilityZone == null || self.availabilityZone
-                    == oldSelf.availabilityZone
+                  rule: '!has(oldSelf.availabilityZone) || self.availabilityZone ==
+                    oldSelf.availabilityZone'
                 - message: vpcId is immutable after creation
-                  rule: oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId
+                  rule: '!has(oldSelf.vpcId) || self.vpcId == oldSelf.vpcId'
               managementPolicies:
                 default:
                 - '*'

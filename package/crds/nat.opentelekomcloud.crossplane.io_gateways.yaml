@@ -270,11 +270,11 @@ spec:
                 - message: one of vpcId, vpcIdRef or vpcIdSelector is required
                   rule: has(self.vpcId) || has(self.vpcIdRef) || has(self.vpcIdSelector)
                 - message: vpcId is immutable after creation
-                  rule: oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId
+                  rule: '!has(oldSelf.vpcId) || self.vpcId == oldSelf.vpcId'
                 - message: one of subnetId, subnetIdRef or subnetIdSelector is required
                   rule: has(self.subnetId) || has(self.subnetIdRef) || has(self.subnetIdSelector)
                 - message: subnetId is immutable after creation
-                  rule: oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId
+                  rule: '!has(oldSelf.subnetId) || self.subnetId == oldSelf.subnetId'
               managementPolicies:
                 default:
                 - '*'

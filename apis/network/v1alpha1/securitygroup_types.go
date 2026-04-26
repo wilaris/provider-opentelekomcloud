@@ -11,8 +11,8 @@ import (
 )
 
 // SecurityGroupParameters are the configurable fields of a SecurityGroup.
-// +kubebuilder:validation:XValidation:rule="oldSelf.enterpriseProjectId == null || self.enterpriseProjectId == oldSelf.enterpriseProjectId",message="enterpriseProjectId is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.tags == null || self.tags == oldSelf.tags",message="tags are immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.enterpriseProjectId) || self.enterpriseProjectId == oldSelf.enterpriseProjectId",message="enterpriseProjectId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.tags) || self.tags == oldSelf.tags",message="tags are immutable after creation"
 type SecurityGroupParameters struct {
 	// Name is the security group name.
 	// +kubebuilder:validation:MinLength=1

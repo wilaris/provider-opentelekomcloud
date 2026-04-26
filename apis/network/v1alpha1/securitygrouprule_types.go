@@ -14,15 +14,15 @@ import (
 // All fields are immutable after creation — the OTC API does not support updates.
 // +kubebuilder:validation:XValidation:rule="has(self.securityGroupId) || has(self.securityGroupIdRef) || has(self.securityGroupIdSelector)",message="one of securityGroupId, securityGroupIdRef or securityGroupIdSelector is required"
 // +kubebuilder:validation:XValidation:rule="self.direction == oldSelf.direction",message="direction is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.securityGroupId == null || self.securityGroupId == oldSelf.securityGroupId",message="securityGroupId is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.description == null || self.description == oldSelf.description",message="description is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.etherType == null || self.etherType == oldSelf.etherType",message="etherType is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.protocol == null || self.protocol == oldSelf.protocol",message="protocol is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.multiPort == null || self.multiPort == oldSelf.multiPort",message="multiPort is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.remoteGroupId == null || self.remoteGroupId == oldSelf.remoteGroupId",message="remoteGroupId is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.remoteIpPrefix == null || self.remoteIpPrefix == oldSelf.remoteIpPrefix",message="remoteIpPrefix is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.action == null || self.action == oldSelf.action",message="action is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.priority == null || self.priority == oldSelf.priority",message="priority is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.securityGroupId) || self.securityGroupId == oldSelf.securityGroupId",message="securityGroupId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.description) || self.description == oldSelf.description",message="description is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.etherType) || self.etherType == oldSelf.etherType",message="etherType is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.protocol) || self.protocol == oldSelf.protocol",message="protocol is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.multiPort) || self.multiPort == oldSelf.multiPort",message="multiPort is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.remoteGroupId) || self.remoteGroupId == oldSelf.remoteGroupId",message="remoteGroupId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.remoteIpPrefix) || self.remoteIpPrefix == oldSelf.remoteIpPrefix",message="remoteIpPrefix is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.action) || self.action == oldSelf.action",message="action is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.priority) || self.priority == oldSelf.priority",message="priority is immutable after creation"
 type SecurityGroupRuleParameters struct {
 	// SecurityGroupID is the ID of the security group to which this rule belongs.
 	// +crossplane:generate:reference:type=go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1.SecurityGroup

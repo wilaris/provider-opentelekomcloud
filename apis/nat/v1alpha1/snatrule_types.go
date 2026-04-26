@@ -14,12 +14,12 @@ import (
 // All fields are immutable after creation — the OTC API does not support updates.
 // +kubebuilder:validation:XValidation:rule="has(self.natGatewayId) || has(self.natGatewayIdRef) || has(self.natGatewayIdSelector)",message="one of natGatewayId, natGatewayIdRef or natGatewayIdSelector is required"
 // +kubebuilder:validation:XValidation:rule="has(self.elasticIpId) || has(self.elasticIpIdRef) || has(self.elasticIpIdSelector)",message="one of elasticIpId, elasticIpIdRef or elasticIpIdSelector is required"
-// +kubebuilder:validation:XValidation:rule="oldSelf.natGatewayId == null || self.natGatewayId == oldSelf.natGatewayId",message="natGatewayId is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.elasticIpId == null || self.elasticIpId == oldSelf.elasticIpId",message="elasticIpId is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId",message="subnetId is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.cidr == null || self.cidr == oldSelf.cidr",message="cidr is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.sourceType == null || self.sourceType == oldSelf.sourceType",message="sourceType is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.description == null || self.description == oldSelf.description",message="description is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.natGatewayId) || self.natGatewayId == oldSelf.natGatewayId",message="natGatewayId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.elasticIpId) || self.elasticIpId == oldSelf.elasticIpId",message="elasticIpId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.subnetId) || self.subnetId == oldSelf.subnetId",message="subnetId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.cidr) || self.cidr == oldSelf.cidr",message="cidr is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.sourceType) || self.sourceType == oldSelf.sourceType",message="sourceType is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.description) || self.description == oldSelf.description",message="description is immutable after creation"
 type SNATRuleParameters struct {
 	// NatGatewayID is the ID of the NAT gateway this SNAT rule belongs to.
 	// +crossplane:generate:reference:type=go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1.Gateway

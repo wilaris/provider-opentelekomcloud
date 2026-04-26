@@ -351,17 +351,17 @@ spec:
                     is required
                   rule: has(self.elasticIpId) || has(self.elasticIpIdRef) || has(self.elasticIpIdSelector)
                 - message: natGatewayId is immutable after creation
-                  rule: oldSelf.natGatewayId == null || self.natGatewayId == oldSelf.natGatewayId
+                  rule: '!has(oldSelf.natGatewayId) || self.natGatewayId == oldSelf.natGatewayId'
                 - message: elasticIpId is immutable after creation
-                  rule: oldSelf.elasticIpId == null || self.elasticIpId == oldSelf.elasticIpId
+                  rule: '!has(oldSelf.elasticIpId) || self.elasticIpId == oldSelf.elasticIpId'
                 - message: subnetId is immutable after creation
-                  rule: oldSelf.subnetId == null || self.subnetId == oldSelf.subnetId
+                  rule: '!has(oldSelf.subnetId) || self.subnetId == oldSelf.subnetId'
                 - message: cidr is immutable after creation
-                  rule: oldSelf.cidr == null || self.cidr == oldSelf.cidr
+                  rule: '!has(oldSelf.cidr) || self.cidr == oldSelf.cidr'
                 - message: sourceType is immutable after creation
-                  rule: oldSelf.sourceType == null || self.sourceType == oldSelf.sourceType
+                  rule: '!has(oldSelf.sourceType) || self.sourceType == oldSelf.sourceType'
                 - message: description is immutable after creation
-                  rule: oldSelf.description == null || self.description == oldSelf.description
+                  rule: '!has(oldSelf.description) || self.description == oldSelf.description'
               managementPolicies:
                 default:
                 - '*'

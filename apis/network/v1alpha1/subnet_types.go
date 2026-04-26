@@ -14,9 +14,9 @@ import (
 // +kubebuilder:validation:XValidation:rule="has(self.vpcId) || has(self.vpcIdRef) || has(self.vpcIdSelector)",message="one of vpcId, vpcIdRef or vpcIdSelector is required"
 // +kubebuilder:validation:XValidation:rule="self.cidr == oldSelf.cidr",message="cidr is immutable after creation"
 // +kubebuilder:validation:XValidation:rule="self.gatewayIp == oldSelf.gatewayIp",message="gatewayIp is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.ipv6Enable == null || self.ipv6Enable == oldSelf.ipv6Enable",message="ipv6Enable is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.availabilityZone == null || self.availabilityZone == oldSelf.availabilityZone",message="availabilityZone is immutable after creation"
-// +kubebuilder:validation:XValidation:rule="oldSelf.vpcId == null || self.vpcId == oldSelf.vpcId",message="vpcId is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.ipv6Enable) || self.ipv6Enable == oldSelf.ipv6Enable",message="ipv6Enable is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.availabilityZone) || self.availabilityZone == oldSelf.availabilityZone",message="availabilityZone is immutable after creation"
+// +kubebuilder:validation:XValidation:rule="!has(oldSelf.vpcId) || self.vpcId == oldSelf.vpcId",message="vpcId is immutable after creation"
 type SubnetParameters struct {
 	// Name is the subnet name.
 	// +kubebuilder:validation:MinLength=1

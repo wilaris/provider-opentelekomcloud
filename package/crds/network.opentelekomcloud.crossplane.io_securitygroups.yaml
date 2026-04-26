@@ -88,10 +88,10 @@ spec:
                 type: object
                 x-kubernetes-validations:
                 - message: enterpriseProjectId is immutable after creation
-                  rule: oldSelf.enterpriseProjectId == null || self.enterpriseProjectId
-                    == oldSelf.enterpriseProjectId
+                  rule: '!has(oldSelf.enterpriseProjectId) || self.enterpriseProjectId
+                    == oldSelf.enterpriseProjectId'
                 - message: tags are immutable after creation
-                  rule: oldSelf.tags == null || self.tags == oldSelf.tags
+                  rule: '!has(oldSelf.tags) || self.tags == oldSelf.tags'
               managementPolicies:
                 default:
                 - '*'

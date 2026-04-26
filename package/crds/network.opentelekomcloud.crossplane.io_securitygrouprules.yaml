@@ -295,24 +295,24 @@ spec:
                 - message: direction is immutable after creation
                   rule: self.direction == oldSelf.direction
                 - message: securityGroupId is immutable after creation
-                  rule: oldSelf.securityGroupId == null || self.securityGroupId ==
-                    oldSelf.securityGroupId
+                  rule: '!has(oldSelf.securityGroupId) || self.securityGroupId ==
+                    oldSelf.securityGroupId'
                 - message: description is immutable after creation
-                  rule: oldSelf.description == null || self.description == oldSelf.description
+                  rule: '!has(oldSelf.description) || self.description == oldSelf.description'
                 - message: etherType is immutable after creation
-                  rule: oldSelf.etherType == null || self.etherType == oldSelf.etherType
+                  rule: '!has(oldSelf.etherType) || self.etherType == oldSelf.etherType'
                 - message: protocol is immutable after creation
-                  rule: oldSelf.protocol == null || self.protocol == oldSelf.protocol
+                  rule: '!has(oldSelf.protocol) || self.protocol == oldSelf.protocol'
                 - message: multiPort is immutable after creation
-                  rule: oldSelf.multiPort == null || self.multiPort == oldSelf.multiPort
+                  rule: '!has(oldSelf.multiPort) || self.multiPort == oldSelf.multiPort'
                 - message: remoteGroupId is immutable after creation
-                  rule: oldSelf.remoteGroupId == null || self.remoteGroupId == oldSelf.remoteGroupId
+                  rule: '!has(oldSelf.remoteGroupId) || self.remoteGroupId == oldSelf.remoteGroupId'
                 - message: remoteIpPrefix is immutable after creation
-                  rule: oldSelf.remoteIpPrefix == null || self.remoteIpPrefix == oldSelf.remoteIpPrefix
+                  rule: '!has(oldSelf.remoteIpPrefix) || self.remoteIpPrefix == oldSelf.remoteIpPrefix'
                 - message: action is immutable after creation
-                  rule: oldSelf.action == null || self.action == oldSelf.action
+                  rule: '!has(oldSelf.action) || self.action == oldSelf.action'
                 - message: priority is immutable after creation
-                  rule: oldSelf.priority == null || self.priority == oldSelf.priority
+                  rule: '!has(oldSelf.priority) || self.priority == oldSelf.priority'
               managementPolicies:
                 default:
                 - '*'
