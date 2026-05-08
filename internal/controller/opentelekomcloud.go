@@ -10,6 +10,7 @@ import (
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/dnspubliczone"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/dnsrecordset"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/elasticip"
+	"go.wilaris.de/provider-opentelekomcloud/internal/controller/kmskey"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/natgateway"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygroup"
 	"go.wilaris.de/provider-opentelekomcloud/internal/controller/securitygrouprule"
@@ -25,6 +26,7 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		config.Setup,
 		ccecluster.SetupGated,
 		elasticip.SetupGated,
+		kmskey.SetupGated,
 		natgateway.SetupGated,
 		dnsprivatezone.SetupGated,
 		dnspubliczone.SetupGated,

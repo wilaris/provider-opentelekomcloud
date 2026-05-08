@@ -6,6 +6,7 @@ import (
 
 	ccev1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/cce/v1alpha1"
 	dnsv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/dns/v1alpha1"
+	kmsv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/kms/v1alpha1"
 	natv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/nat/v1alpha1"
 	networkv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/network/v1alpha1"
 	opentelekomcloudv1alpha1 "go.wilaris.de/provider-opentelekomcloud/apis/v1alpha1"
@@ -16,6 +17,7 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		ccev1alpha1.SchemeBuilder.AddToScheme,
 		dnsv1alpha1.SchemeBuilder.AddToScheme,
+		kmsv1alpha1.SchemeBuilder.AddToScheme,
 		natv1alpha1.SchemeBuilder.AddToScheme,
 		networkv1alpha1.SchemeBuilder.AddToScheme,
 		opentelekomcloudv1alpha1.SchemeBuilder.AddToScheme,
